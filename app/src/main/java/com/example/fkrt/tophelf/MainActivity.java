@@ -121,6 +121,13 @@ public class MainActivity extends AppCompatActivity
             public boolean onQueryTextSubmit(String query) {
                 searchList.setVisibility(View.INVISIBLE);
                 placeList.setVisibility(View.VISIBLE);
+
+                if(query.charAt(0) == '@') {
+                    intent = new Intent(getApplicationContext(), FriendActivity.class);
+                    intent.putExtra("friend_id", "2");
+                    startActivity(intent);
+                }
+
                 return false;
             }
 
