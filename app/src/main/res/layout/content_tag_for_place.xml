@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="2dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.fkrt.tophelf.TagForPlace"
+    tools:showIn="@layout/app_bar_tag_for_place"
+    android:id="@+id/outer"
+    android:background="#FFFFFF" >
+
+    <SearchView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:queryHint="#search ..."
+        android:id="@+id/searchbox"
+        android:textColor="#2D96C4"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_below="@id/searchbox"
+        android:layout_height="2dip"
+        android:background="#2D96C4" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchlist"
+        android:clickable="true"
+        android:layout_below="@+id/searchbox"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true" />
+
+    <RelativeLayout
+        android:id="@+id/inner0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/searchbox">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/inner">
+
+            <ImageView
+                android:src="@drawable/logo"
+                android:layout_margin="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/image"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Place X"
+                android:id="@+id/place"
+                android:textColor="#2D96C4"
+                android:textSize="18dp"
+                android:gravity="center"
+                android:layout_alignTop="@+id/image"
+                android:layout_toRightOf="@+id/image"
+                android:layout_toEndOf="@+id/image" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Tag Y"
+                android:id="@+id/tag"
+                android:textColor="#2D96C4"
+                android:textSize="18dp"
+                android:layout_below="@+id/place"
+                android:layout_toRightOf="@+id/image"
+                android:layout_toEndOf="@+id/image" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Overall : 5/5"
+                android:id="@+id/rating"
+                android:textColor="#2D96C4"
+                android:textSize="18dp"
+                android:layout_below="@+id/tag"
+                android:layout_toRightOf="@+id/image"
+                android:layout_toEndOf="@+id/image" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_below="@id/inner"
+            android:layout_height="2dip"
+            android:background="#2D96C4" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/inner"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:id="@+id/inner2">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:background="#887cc3e1" >
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Place Info"
+                    android:id="@+id/placeinfo"
+                    android:onClick="onClick"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@android:color/transparent"
+                    android:textColor="#7cc3e1"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Comments"
+                    android:id="@+id/comments"
+                    android:enabled="false"
+                    android:onClick="onClick2"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@android:color/transparent"
+                    android:textColor="#7cc3e1" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Map"
+                    android:id="@+id/map"
+                    android:onClick="onClick3"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@android:color/transparent"
+                    android:textColor="#7cc3e1" />
+            </LinearLayout>
+
+        </TableLayout>
+
+        <RelativeLayout
+            android:id="@+id/inner3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/inner2" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Information block for place ...."
+                android:scrollbars="vertical"
+                android:visibility="invisible"
+                android:id="@+id/placeinfoV"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/commentsV"
+                android:clickable="true"
+                android:layout_centerHorizontal="true" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:src="@drawable/logo"
+                android:id="@+id/mapV"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_below="@id/inner2"
+            android:layout_height="2dip"
+            android:background="#2D96C4" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
