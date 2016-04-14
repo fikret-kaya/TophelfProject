@@ -3,10 +3,12 @@ package com.example.fkrt.tophelf;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +38,8 @@ public class FriendActivity extends AppCompatActivity {
 
     private Bundle bundle;
     private String friend_id, user_id;
+    private SharedPreferences sharedPref;
+    private boolean isFB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +57,11 @@ public class FriendActivity extends AppCompatActivity {
             }
         });
 
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        isFB = sharedPref.getBoolean("isFB", false);
+        user_id = sharedPref.getString("u_id", "N/A");
         bundle = getIntent().getExtras();
         friend_id = bundle.getString("friend_id");
-        user_id = "2";
 
         boolean b = false;
         try {
