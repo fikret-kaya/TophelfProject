@@ -1,0 +1,9 @@
+diff a/app/build.gradle b/app/build.gradle	(rejected hunks)
+@@ -6,6 +6,7 @@
+ 
+     defaultConfig {
+         applicationId "com.example.fkrt.tophelf"
++        minSdkVersion 16
+         targetSdkVersion 23
+         versionCode 1
+         versionName "1.0"

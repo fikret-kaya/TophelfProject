@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Tophelf</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_tag_for_place">TagForPlace</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_vote">VoteActivity</string>
+    <string name="app_id">910339232416309</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
+</resources>
