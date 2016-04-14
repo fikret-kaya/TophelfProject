@@ -55,7 +55,7 @@ public class FriendActivity extends AppCompatActivity {
 
         bundle = getIntent().getExtras();
         friend_id = bundle.getString("friend_id");
-        user_id = "5";
+        user_id = "2";
 
         boolean b = false;
         try {
@@ -262,7 +262,7 @@ public class FriendActivity extends AppCompatActivity {
             name = (TextView) findViewById(R.id.name);
             name.setText(username);
             rating = (TextView) findViewById(R.id.rating);
-            rating.setText(ratings);
+            rating.setText("Rating : " + ratings);
         }
     }
 
