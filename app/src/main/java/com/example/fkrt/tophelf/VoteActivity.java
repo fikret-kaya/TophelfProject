@@ -1,17 +1,27 @@
 package com.example.fkrt.tophelf;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.Toast;
 
 import com.google.android.gms.playlog.internal.LogEvent;
@@ -32,11 +42,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
-public class VoteActivity extends AppCompatActivity {
+public class VoteActivity extends AppCompatActivity implements LocationListener {
 
     private Intent intent;
-
-    private String latitude, longitude;
+    private double latitude, longitude;
+    private SharedPreferences sharedPref;
+    private String u_id;
+    private String fbID;
+    private boolean isFB;
+    private EditText place,tag,comment;
+    private RatingBar rating;
+    private String placeRate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,21 +61,67 @@ public class VoteActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Bundle bundle = new Bundle();
-        bundle = getIntent().getExtras();
-        latitude = bundle.getString("latitude");
-        longitude = bundle.getString("longitude");
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        isFB = sharedPref.getBoolean("isFB", false);
+        fbID = sharedPref.getString("fbID", "N/A");
+        u_id = sharedPref.getString("u_id", "N/A");
 
+        place = (EditText) findViewById(R.id.placeInfo);
+        tag = (EditText) findViewById(R.id.tagInfo);
+        comment = (EditText) findViewById(R.id.editText);
+        rating = (RatingBar) findViewById(R.id.ratingBar);
+        rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                placeRate = String.valueOf(rating);
+            }
+        });
+
+        LocationManager lm = (LocationManager) getSystemService(getBaseContext().LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        lm.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+        Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (myLocation == null)
+            myLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (myLocation == null)
+            myLocation = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+        latitude = myLocation.getLatitude();
+        longitude = myLocation.getLongitude();
     }
 
     // vote
     public void onClick(View v) throws ExecutionException, InterruptedException {
         Toast.makeText(getApplicationContext(), "Thanks Your For Your Contribution", Toast.LENGTH_LONG).show();
 
-        boolean b = new Voteconn().execute("1","12","31","kyma","burger","cilgindi","5").get();
+        boolean b = new Voteconn().execute(u_id,latitude+ "",longitude+"",place.getText().toString(),tag.getText().toString(),comment.getText().toString(), placeRate).get();
 
         intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 
     class Voteconn extends AsyncTask<Object, Void, Boolean>
@@ -224,7 +286,7 @@ public class VoteActivity extends AppCompatActivity {
                             jsonParam.put("p_id", p_id);
                             jsonParam.put("t_id", t_id);
                             jsonParam.put("c_id", c_id);
-                            jsonParam.put("rating", "0");
+                            jsonParam.put("rating", rating);
 
                             OutputStream os4 = conn4.getOutputStream();
                             BufferedWriter writer4 = new BufferedWriter(

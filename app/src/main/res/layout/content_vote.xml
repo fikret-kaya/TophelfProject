@@ -70,7 +70,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/placeInfo"
-                    android:text="Kyma"
+                    android:text=""
                     android:layout_alignTop="@+id/place"
                     android:layout_toRightOf="@+id/place"
                     android:layout_toEndOf="@+id/place" />
@@ -99,7 +99,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tagInfo"
-                    android:text="#chesseBurger"
+                    android:text=""
                     android:layout_alignTop="@+id/tag"
                     android:layout_toRightOf="@+id/tag"
                     android:layout_toEndOf="@+id/tag" />

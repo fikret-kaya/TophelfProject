@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,6 +16,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -41,6 +43,9 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.widget.ProfilePictureView;
+
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,11 +54,13 @@ public class MainActivity extends AppCompatActivity
 
     private Intent intent;
     private Bundle bundle;
-    private String user_name = "Oguzhan YILDIZ";
-    //private Bitmap profilePic = images[1];
-
+    private String user_name;
+    private String u_id;
+    private String fbID;
+    private boolean isFB;
     private SearchView searchView;
     private ListView searchList, placeList;
+    private SharedPreferences sharedPref;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     String[] names = {"Name Surname 1", "Name Surname 2", "Name Surname 3", "Name Surname 4", "Name Surname 5", "Name Surname 6", "Name Surname 7", "Name Surname 8", "Name Surname 9", "Name Surname 10"};
@@ -72,26 +79,20 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //shared pref
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        isFB = sharedPref.getBoolean("isFB", false);
+        user_name = sharedPref.getString("name", "N/A");
+        fbID = sharedPref.getString("fbID","N/A");
+        u_id = sharedPref.getString("u_id", "N/A");
+
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                GPSTracker gpsTracker = new GPSTracker(MainActivity.this);
-
-                if(gpsTracker.canGetLocation()) {
-                    double latitude = gpsTracker.getLatitude();
-                    double longitude = gpsTracker.getLongitude();
-
-                    intent = new Intent(view.getContext(), VoteActivity.class);
-                    intent.putExtra("latitude", latitude);
-                    intent.putExtra("longitude", longitude);
-                    startActivity(intent);
-
-                } else {
-                    gpsTracker.showSettingsAlert();
-                }
-
+                intent = new Intent(view.getContext(), VoteActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -104,8 +105,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        bundle = getIntent().getExtras();
-        //user_name = bundle.getString("name");
+        /*bundle = getIntent().getExtras();
+        user_name = bundle.getString("name");
+        user_id = bundle.getString("id");*/
+
 
         placeList = (ListView) findViewById(R.id.placelist);
         ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings);
@@ -139,11 +142,32 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        //View hView =  navigationView.inflateHeaderView(R.layout.nav_header_main);
-        ImageView imgvw = (ImageView)navigationView.findViewById(R.id.imageView);
-        TextView name = (TextView)navigationView.findViewById(R.id.name);
-        //imgvw.setImageBitmap(profilePic);
-        //name.setText(user_name);
+        View hView =  navigationView.getHeaderView(0);
+        TextView name = (TextView)hView.findViewById(R.id.name);
+        name.setText(user_name);
+
+        if(isFB){
+
+            ProfilePictureView imgvw = (ProfilePictureView)hView.findViewById(R.id.profilePicture);
+            //ImageView imgvw = (ImageView)hView.findViewById(R.id.profilePicture);
+           /* ProfilePictureView fb = new ProfilePictureView(this);
+            fb.setProfileId(user_id);
+            fb.setPresetSize(ProfilePictureView.SMALL);
+            ImageView fbImage = ( ( ImageView)fb.getChildAt( 0));
+            Bitmap bitmap  = ( ( BitmapDrawable) fbImage.getDrawable()).getBitmap();
+            imgvw.setImageBitmap(bitmap);*/
+            imgvw.setProfileId(fbID);
+
+        } else{
+            //ImageView imgvw = (ImageView)hView.findViewById(R.id.profilePicture);
+           /* ProfilePictureView fb = new ProfilePictureView(this);
+            fb.setProfileId(user_id);
+            fb.setPresetSize(ProfilePictureView.SMALL);
+            ImageView fbImage = ( ( ImageView)fb.getChildAt( 0));
+            Bitmap bitmap  = ( ( BitmapDrawable) fbImage.getDrawable()).getBitmap();
+            imgvw.setImageBitmap(bitmap);*/
+        }
+
 
     }
 

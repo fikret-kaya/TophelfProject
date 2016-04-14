@@ -2,9 +2,11 @@ package com.example.fkrt.tophelf;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.text.SpannableString;
@@ -29,6 +31,8 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.facebook.login.widget.ProfilePictureView;
+
 public class TagForPlace extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -52,9 +56,18 @@ public class TagForPlace extends AppCompatActivity
 
     ArrayAdapter<String> arrayAdapter;
 
+    private boolean isFB;
+    private String user_name;
+    private String fbID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        isFB = sharedPref.getBoolean("isFB", false);
+        user_name = sharedPref.getString("name","N/A");
+        fbID = sharedPref.getString("fbID","N/A");
 
         bundle = getIntent().getExtras();
         String nn = bundle.getString("name");
@@ -133,6 +146,24 @@ public class TagForPlace extends AppCompatActivity
                 return false;
             }
         });
+
+        View hView =  navigationView.getHeaderView(0);
+        TextView name = (TextView)hView.findViewById(R.id.name);
+        name.setText(user_name);
+
+        if(isFB){
+            ProfilePictureView imgvw = (ProfilePictureView)hView.findViewById(R.id.profilePicture);
+            imgvw.setProfileId(fbID);
+
+        } else{
+        //ImageView imgvw = (ImageView)hView.findViewById(R.id.profilePicture);
+           /* ProfilePictureView fb = new ProfilePictureView(this);
+            fb.setProfileId(user_id);
+            fb.setPresetSize(ProfilePictureView.SMALL);
+            ImageView fbImage = ( ( ImageView)fb.getChildAt( 0));
+            Bitmap bitmap  = ( ( BitmapDrawable) fbImage.getDrawable()).getBitmap();
+            imgvw.setImageBitmap(bitmap);*/
+        }
 
     }
 

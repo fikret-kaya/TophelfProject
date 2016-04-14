@@ -3,6 +3,7 @@ package com.example.fkrt.tophelf;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -49,6 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button register, selectImage;
     private Bitmap image;
     private static final int SELECTED_IMAGE = 1;
+    public SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,8 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         name = (EditText) findViewById(R.id.name);
         surname = (EditText) findViewById(R.id.surname);
@@ -123,7 +128,11 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
                 alertDialog.show();
-
+            } else {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putBoolean("isFB", false);
+                editor.putString("name", name.getText().toString() + " " + surname.getText().toString());
+                editor.commit();
             }
         }
         //intent = new Intent(this, MainActivity.class);
@@ -221,7 +230,25 @@ public class RegisterActivity extends AppCompatActivity {
                 InputStream is = null;
 
                 if (statusCode >= 200 && statusCode < 400) {
-                    // zzzzzzzz
+
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    responseString =responseString.substring(1,response.length()-1);
+
+                    jsonParam = new JSONObject(responseString);
+                    int u_id = Integer.parseInt(jsonParam.getString("u_id"));
+
+                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                    editor.putString("u_id", "" + u_id);
+                    editor.commit();
+
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     return true;
