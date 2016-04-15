@@ -86,6 +86,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton loginButton;
     private AccessToken accessToken;
     public SharedPreferences sharedpreferences;
+    private boolean isLogin;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -100,6 +101,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        isLogin = sharedpreferences.getBoolean("isLogin",false);
+
+        if(isLogin){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+        }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
@@ -331,7 +339,7 @@ public class LoginActivity extends AppCompatActivity {
             String password = params[1];
 
             try {
-                URL url = new URL("http://139.179.211.124:3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -378,6 +386,8 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedpreferences.edit();
                     editor.putString("u_id", "" + u_id);
                     editor.putString("name", user_name);
+                    editor.putBoolean("isFB", false);
+                    editor.putBoolean("isLogin", true);
                     editor.commit();
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -446,7 +456,7 @@ public class LoginActivity extends AppCompatActivity {
             String encodedImage = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
 
             try {
-                URL url = new URL("http://139.179.211.124:3000"); // 192.168.1.24 --- 10.0.2.2
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000"); // 192.168.1.24 --- 10.0.2.2
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
