@@ -86,6 +86,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton loginButton;
     private AccessToken accessToken;
     public SharedPreferences sharedpreferences;
+    private boolean isLogin;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -100,6 +101,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        isLogin = sharedpreferences.getBoolean("isLogin",false);
+
+        if(isLogin){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+        }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
@@ -378,6 +386,8 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedpreferences.edit();
                     editor.putString("u_id", "" + u_id);
                     editor.putString("name", user_name);
+                    editor.putBoolean("isFB", false);
+                    editor.putBoolean("isLogin", true);
                     editor.commit();
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);

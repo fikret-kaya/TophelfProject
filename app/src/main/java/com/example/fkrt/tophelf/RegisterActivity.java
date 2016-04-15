@@ -247,6 +247,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     SharedPreferences.Editor editor = sharedpreferences.edit();
                     editor.putString("u_id", "" + u_id);
+                    editor.putBoolean("isLogin", true);
                     editor.commit();
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);

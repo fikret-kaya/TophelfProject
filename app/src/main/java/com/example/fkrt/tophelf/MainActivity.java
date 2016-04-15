@@ -44,6 +44,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 import org.json.JSONException;
@@ -250,7 +251,15 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_helpfeedback) {
 
         } else if (id == R.id.nav_logout) {
-
+            if(isFB){
+                LoginManager.getInstance().logOut();
+            }else{
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("isLogin", false);
+                editor.commit();
+            }
+            intent = new Intent(this, LoginActivity.class);
+            this.startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
