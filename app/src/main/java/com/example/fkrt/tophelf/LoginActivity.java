@@ -339,7 +339,7 @@ public class LoginActivity extends AppCompatActivity {
             String password = params[1];
 
             try {
-                URL url = new URL("http://139.179.211.124:3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -456,7 +456,7 @@ public class LoginActivity extends AppCompatActivity {
             String encodedImage = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
 
             try {
-                URL url = new URL("http://139.179.211.124:3000"); // 192.168.1.24 --- 10.0.2.2
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000"); // 192.168.1.24 --- 10.0.2.2
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
