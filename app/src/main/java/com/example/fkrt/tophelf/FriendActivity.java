@@ -185,7 +185,7 @@ public class FriendActivity extends AppCompatActivity {
         private TextView name;
         private TextView rating;
 
-        private String username, images, ratings;
+        private String username, email, images, ratings;
         private Bitmap decodedImage;
 
         @Override
@@ -239,6 +239,7 @@ public class FriendActivity extends AppCompatActivity {
 
                     jsonParam = new JSONObject(responseString);
                     username = jsonParam.getString("username");
+                    email = jsonParam.getString("email");
                     images = jsonParam.getString("image");
                     ratings = jsonParam.getString("rating");
 
