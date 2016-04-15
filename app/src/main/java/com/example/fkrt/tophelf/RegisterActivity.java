@@ -194,11 +194,11 @@ public class RegisterActivity extends AppCompatActivity {
             Bitmap image = (Bitmap) params[4];
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
-            String encodedImage = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
+            image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            String encodedImage = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP);
 
             try {
-                URL url = new URL("http://139.179.211.124:3000"); // 192.168.1.24 --- 10.0.2.2
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000"); // 192.168.1.24 --- 10.0.2.2
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -247,6 +247,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     SharedPreferences.Editor editor = sharedpreferences.edit();
                     editor.putString("u_id", "" + u_id);
+                    editor.putBoolean("isLogin", true);
                     editor.commit();
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
