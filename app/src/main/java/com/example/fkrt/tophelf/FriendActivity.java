@@ -185,7 +185,7 @@ public class FriendActivity extends AppCompatActivity {
         private TextView name;
         private TextView rating;
 
-        private String username, images, ratings;
+        private String username, email, images, ratings;
         private Bitmap decodedImage;
 
         @Override
@@ -239,11 +239,26 @@ public class FriendActivity extends AppCompatActivity {
 
                     jsonParam = new JSONObject(responseString);
                     username = jsonParam.getString("username");
+                    email = jsonParam.getString("email");
                     images = jsonParam.getString("image");
                     ratings = jsonParam.getString("rating");
 
-                    byte[] decodedString = Base64.decode(images, Base64.DEFAULT);
-                    decodedImage = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    byte[] decodedString = Base64.decode(images.getBytes(), Base64.DEFAULT);
+
+
+                    BitmapFactory.Options options;
+                    try {
+                        decodedImage = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    } catch (OutOfMemoryError e) {
+                        try {
+                            options = new BitmapFactory.Options();
+                            options.inSampleSize = 20;
+                            decodedImage = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length,options);
+                        } catch(Exception ex) {
+                        }
+                    }
+                    //decodedImage = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    return true;
                 }
                 else {
                     is = conn.getErrorStream();
@@ -264,6 +279,7 @@ public class FriendActivity extends AppCompatActivity {
             super.onPostExecute(aBoolean);
 
             image = (ImageView) findViewById(R.id.image);
+            image.setScaleType(ImageView.ScaleType.CENTER);
             image.setImageBitmap(decodedImage);
             name = (TextView) findViewById(R.id.name);
             name.setText(username);
