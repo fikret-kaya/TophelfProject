@@ -104,7 +104,6 @@ public class ProfileActivity extends AppCompatActivity {
         relationTimes = new String[relations.size()];
         emails = new String[relations.size()];
 
-
         for(int i = 0; i < relations.size(); i++) {
             names[i] = user_name;
             places[i] = relations.get(i).getP_id();
@@ -114,7 +113,6 @@ public class ProfileActivity extends AppCompatActivity {
             relationTimes[i] = relations.get(i).getRelationTime();
             emails[i] = relations.get(i).getEmail();
         }
-
 
         votes = (ListView) findViewById(R.id.votes);
         ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings, relationTimes,emails);
