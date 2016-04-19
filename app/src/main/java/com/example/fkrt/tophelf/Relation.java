@@ -1,24 +1,30 @@
 package com.example.fkrt.tophelf;
 
+import java.security.Timestamp;
+
 /**
  * Created by FKRT on 15.04.2016.
  */
-public class MyRating {
+public class Relation {
 
-    private String p_id, t_id, c_id, rating;
+    private String username, p_id, t_id, c_id, rating, relationTime;
 
-    public MyRating() {
+    public Relation() {
+        username = "";
         p_id = "";
         t_id  = "";
         c_id  = "";
         rating  = "";
+        relationTime = "";
     }
 
-    public MyRating(String p_id, String t_id, String c_id, String rating) {
+    public Relation(String username, String p_id, String t_id, String c_id, String rating, String relationTime) {
+        this.username = username;
         this.p_id = p_id;
         this.t_id  = t_id;
         this.c_id  = c_id;
         this.rating  = rating;
+        this.relationTime = relationTime;
     }
 
     public String getP_id() {
@@ -37,6 +43,14 @@ public class MyRating {
         return rating;
     }
 
+    public String getRelationTime() {
+        return relationTime;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
     public void setP_id(String p_id) {
         this.p_id = p_id;
     }
@@ -52,4 +66,13 @@ public class MyRating {
     public void setRating(String rating) {
         this.rating = rating;
     }
+
+    public void setRelationTime(String relationTime) {
+        this.relationTime = relationTime;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
 }
