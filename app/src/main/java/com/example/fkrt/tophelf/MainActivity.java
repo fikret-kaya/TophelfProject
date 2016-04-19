@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     ArrayList<String> friendsIDs;
     ArrayList<Relation> relations;
 
-    private String[] names, places, tags, comments, ratings;
+    private String[] names, places, tags, comments, ratings, relationTimes, emails;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     int[] images = {R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo,
@@ -102,6 +102,8 @@ public class MainActivity extends AppCompatActivity
         tags = new String[relations.size()];
         comments = new String[relations.size()];
         ratings = new String[relations.size()];
+        relationTimes = new String[relations.size()];
+        emails = new String[relations.size()];
 
         for(int i = 0; i < relations.size(); i++) {
             names[i] = relations.get(i).getUsername();
@@ -109,6 +111,8 @@ public class MainActivity extends AppCompatActivity
             tags[i] = relations.get(i).getT_id();
             comments[i] = relations.get(i).getC_id();
             ratings[i] = relations.get(i).getRating();
+            relationTimes[i] = relations.get(i).getRelationTime();
+            emails[i] = relations.get(i).getEmail();
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -135,7 +139,7 @@ public class MainActivity extends AppCompatActivity
 
 
         placeList = (ListView) findViewById(R.id.placelist);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings);
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings, relationTimes, emails);
         placeList.setAdapter(listRowAdapter);
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);
@@ -185,9 +189,9 @@ public class MainActivity extends AppCompatActivity
         TextView name = (TextView) hView.findViewById(R.id.name);
         name.setText(user_name);
 
+        ProfilePictureView imgvw = (ProfilePictureView) hView.findViewById(R.id.profilePicture);
         if (isFB) {
 
-            ProfilePictureView imgvw = (ProfilePictureView) hView.findViewById(R.id.profilePicture);
             //ImageView imgvw = (ImageView)hView.findViewById(R.id.profilePicture);
            /* ProfilePictureView fb = new ProfilePictureView(this);
             fb.setProfileId(user_id);
@@ -198,13 +202,7 @@ public class MainActivity extends AppCompatActivity
             imgvw.setProfileId(fbID);
 
         } else {
-            //ImageView imgvw = (ImageView)hView.findViewById(R.id.profilePicture);
-           /* ProfilePictureView fb = new ProfilePictureView(this);
-            fb.setProfileId(user_id);
-            fb.setPresetSize(ProfilePictureView.SMALL);
-            ImageView fbImage = ( ( ImageView)fb.getChildAt( 0));
-            Bitmap bitmap  = ( ( BitmapDrawable) fbImage.getDrawable()).getBitmap();
-            imgvw.setImageBitmap(bitmap);*/
+            imgvw.setProfileId("10209196878817858");
         }
 
 
@@ -491,7 +489,7 @@ public class MainActivity extends AppCompatActivity
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
                         relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
-                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime")));
+                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"),jsonParam.getString("email")));
                     }
 
                     return relation;
@@ -527,7 +525,10 @@ class ListRowAdapter extends ArrayAdapter<String> {
     String[] places;
     String[] tags;
     String[] ratings;
-    ListRowAdapter(Context context, int images[], String[] names, String[] places, String[] tags, String[] ratings) {
+    String[] relationTimes;
+    String[] emails;
+
+    ListRowAdapter(Context context, int images[], String[] names, String[] places, String[] tags, String[] ratings, String[] relationTimes, String[] emails) {
         super(context, R.layout.single_row, R.id.place, places);
         this.context = context;
         this.images = images;
@@ -535,6 +536,8 @@ class ListRowAdapter extends ArrayAdapter<String> {
         this.places = places;
         this.tags = tags;
         this.ratings = ratings;
+        this.relationTimes = relationTimes;
+        this.emails = emails;
     }
 
     /*placeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -549,7 +552,7 @@ class ListRowAdapter extends ArrayAdapter<String> {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row = layoutInflater.inflate(R.layout.single_row, parent, false);
 
-        ImageView myImage = (ImageView) row.findViewById(R.id.image);
+        ProfilePictureView myImage = (ProfilePictureView) row.findViewById(R.id.image);
         TextView myName = (TextView) row.findViewById(R.id.name);
         TextView myPlace = (TextView) row.findViewById(R.id.place);
         TextView myTag = (TextView) row.findViewById(R.id.tag);
@@ -557,7 +560,12 @@ class ListRowAdapter extends ArrayAdapter<String> {
         final Button myMinus = (Button) row.findViewById(R.id.minus);
         final Button myPlus = (Button) row.findViewById(R.id.plus);
 
-        myImage.setImageResource(images[position]);
+        if( emails[position].contains("@")){
+            myImage.setProfileId("10209196878817858");
+        }else {
+            myImage.setProfileId(emails[position]);
+        }
+
         myName.setText(names[position]);
         myPlace.setText(places[position]);
         myTag.setText(tags[position]);
