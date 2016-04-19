@@ -6,8 +6,7 @@
     android:descendantFocusability="blocksDescendants"
     android:background="#FFFFFF" >
 
-    <ImageView
-        android:src="@drawable/logo"
+    <com.facebook.login.widget.ProfilePictureView
         android:layout_margin="10dp"
         android:layout_width="56dp"
         android:layout_height="56dp"
