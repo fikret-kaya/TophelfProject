@@ -19,6 +19,8 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.facebook.login.widget.ProfilePictureView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,17 +43,18 @@ public class ProfileActivity extends AppCompatActivity {
     private Intent intent;
 
     private RelativeLayout inner0;
-    private ImageView profileImage;
+    private ProfilePictureView profileImage;
     private SearchView searchView;
     private ListView votes;
     private ListView searchList;
 
     private SharedPreferences sharedPref;
-    private String u_id, user_name;
+    private String u_id, user_name,fbID;
+    private boolean isFB;
 
     ArrayList<Relation> relations;
 
-    private String[] names, places, tags, comments, ratings;
+    private String[] names, places, tags, comments, ratings, relationTimes, emails;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     int[] images = {R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo,
@@ -78,6 +81,8 @@ public class ProfileActivity extends AppCompatActivity {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         u_id = sharedPref.getString("u_id", "N/A");
         user_name = sharedPref.getString("name", "N/A");
+        isFB = sharedPref.getBoolean("isFB", false);
+        fbID = sharedPref.getString("fbID", "N/A");
 
         try {
             relations = new GetTimelineConn().execute(u_id).get();
@@ -89,13 +94,16 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         inner0 = (RelativeLayout) findViewById(R.id.inner0);
-        profileImage = (ImageView) findViewById(R.id.image);
+        profileImage = (ProfilePictureView) findViewById(R.id.image);
 
         names = new String[relations.size()];
         places = new String[relations.size()];
         tags = new String[relations.size()];
         comments = new String[relations.size()];
         ratings = new String[relations.size()];
+        relationTimes = new String[relations.size()];
+        emails = new String[relations.size()];
+
 
         for(int i = 0; i < relations.size(); i++) {
             names[i] = user_name;
@@ -103,10 +111,13 @@ public class ProfileActivity extends AppCompatActivity {
             tags[i] = relations.get(i).getT_id();
             comments[i] = relations.get(i).getC_id();
             ratings[i] = relations.get(i).getRating();
+            relationTimes[i] = relations.get(i).getRelationTime();
+            emails[i] = relations.get(i).getEmail();
         }
 
+
         votes = (ListView) findViewById(R.id.votes);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings);
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings, relationTimes,emails);
         votes.setAdapter(listRowAdapter);
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);
@@ -196,7 +207,7 @@ public class ProfileActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
                         relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
-                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime")));
+                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"), jsonParam.getString("email")));
                     }
 
                     return relation;
@@ -224,7 +235,7 @@ public class ProfileActivity extends AppCompatActivity {
     //  Server connectıon
     class GetFriendConn extends AsyncTask<String, Void, Boolean>
     {
-        private ImageView image;
+        private ProfilePictureView image;
         private TextView name;
         private TextView rating;
 
@@ -307,8 +318,12 @@ public class ProfileActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
 
-            image = (ImageView) findViewById(R.id.image);
-            image.setImageBitmap(decodedImage);
+            image = (ProfilePictureView) findViewById(R.id.image);
+            if( !isFB){
+                image.setProfileId("10209196878817858");
+            }else {
+                image.setProfileId(fbID);
+            }
             name = (TextView) findViewById(R.id.name);
             name.setText(username);
             rating = (TextView) findViewById(R.id.rating);
