@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.login.widget.ProfilePictureView;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 public class FriendActivity extends AppCompatActivity {
 
     private Bundle bundle;
-    private String friend_id, user_id;
+    private String friend_id, user_id,fbID;
     private SharedPreferences sharedPref;
     private boolean isFB;
 
@@ -60,6 +62,7 @@ public class FriendActivity extends AppCompatActivity {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         isFB = sharedPref.getBoolean("isFB", false);
         user_id = sharedPref.getString("u_id", "N/A");
+        fbID = sharedPref.getString("fbID", "N/A");
         bundle = getIntent().getExtras();
         friend_id = bundle.getString("friend_id");
 
@@ -181,7 +184,7 @@ public class FriendActivity extends AppCompatActivity {
     //  Server connectıon
     class GetFriendConn extends AsyncTask<String, Void, Boolean>
     {
-        private ImageView image;
+        private ProfilePictureView image;
         private TextView name;
         private TextView rating;
 
@@ -278,9 +281,12 @@ public class FriendActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
 
-            image = (ImageView) findViewById(R.id.image);
-            image.setScaleType(ImageView.ScaleType.CENTER);
-            image.setImageBitmap(decodedImage);
+            image = (ProfilePictureView) findViewById(R.id.image);
+            if( !isFB){
+                image.setProfileId("10209196878817858");
+            }else {
+                image.setProfileId(fbID);
+            }
             name = (TextView) findViewById(R.id.name);
             name.setText(username);
             rating = (TextView) findViewById(R.id.rating);
