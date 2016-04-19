@@ -61,7 +61,7 @@ public class TagForPlace extends AppCompatActivity
     private SearchView searchView;
     private TextView place, tag, rating, placeInfoV;
     private Button placeInfo, comments, map;
-    private ListView commentsV, searchList;
+    private ListView commentsV, searchList, votes;
     private ImageView mapV;
 
     ArrayList<Relation> relations;
@@ -100,6 +100,24 @@ public class TagForPlace extends AppCompatActivity
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
+        }
+
+        names = new String[relations.size()];
+        places = new String[relations.size()];
+        tags = new String[relations.size()];
+        commentsList = new String[relations.size()];
+        ratings = new String[relations.size()];
+        relationTimes = new String[relations.size()];
+        emails = new String[relations.size()];
+
+        for(int i = 0; i < relations.size(); i++) {
+            names[i] = user_name;
+            places[i] = relations.get(i).getP_id();
+            tags[i] = relations.get(i).getT_id();
+            commentsList[i] = relations.get(i).getC_id();
+            ratings[i] = relations.get(i).getRating();
+            relationTimes[i] = relations.get(i).getRelationTime();
+            emails[i] = relations.get(i).getEmail();
         }
 
         setContentView(R.layout.activity_tag_for_place);
@@ -141,7 +159,7 @@ public class TagForPlace extends AppCompatActivity
 
         placeInfoV = (TextView) findViewById(R.id.placeinfoV);
         commentsV = (ListView) findViewById(R.id.commentsV);
-        CommentsListRowAdapter listRowAdapter = new CommentsListRowAdapter(this, images, names, places, tags, ratings);
+        CommentsListRowAdapter listRowAdapter = new CommentsListRowAdapter(this, images, names, places, tags, ratings, relationTimes,emails);
         commentsV.setAdapter(listRowAdapter);
         mapV = (ImageView) findViewById(R.id.mapV);
 
@@ -489,7 +507,10 @@ class CommentsListRowAdapter extends ArrayAdapter<String> {
     String[] places;
     String[] tags;
     String[] ratings;
-    CommentsListRowAdapter(Context context, int images[], String[] names, String[] places, String[] tags, String[] ratings) {
+    String[] relationTimes;
+    String[] emails;
+
+    CommentsListRowAdapter(Context context, int images[], String[] names, String[] places, String[] tags, String[] ratings, String[] relationTimes, String[] emails) {
         super(context, R.layout.single_row, R.id.place, places);
         this.context = context;
         this.images = images;
@@ -497,6 +518,8 @@ class CommentsListRowAdapter extends ArrayAdapter<String> {
         this.places = places;
         this.tags = tags;
         this.ratings = ratings;
+        this.relationTimes = relationTimes;
+        this.emails = emails;
     }
 
     /*placeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -511,7 +534,7 @@ class CommentsListRowAdapter extends ArrayAdapter<String> {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row = layoutInflater.inflate(R.layout.single_row, parent, false);
 
-        ImageView myImage = (ImageView) row.findViewById(R.id.image);
+        ProfilePictureView myImage = (ProfilePictureView) row.findViewById(R.id.image);
         TextView myName = (TextView) row.findViewById(R.id.name);
         TextView myPlace = (TextView) row.findViewById(R.id.place);
         TextView myTag = (TextView) row.findViewById(R.id.tag);
@@ -519,7 +542,12 @@ class CommentsListRowAdapter extends ArrayAdapter<String> {
         final Button myMinus = (Button) row.findViewById(R.id.minus);
         final Button myPlus = (Button) row.findViewById(R.id.plus);
 
-        myImage.setImageResource(images[position]);
+        if( emails[position].contains("@")){
+            myImage.setProfileId("10209196878817858");
+        }else {
+            myImage.setProfileId(emails[position]);
+        }
+
         myName.setText(names[position]);
         myPlace.setText(places[position]);
         myTag.setText(tags[position]);

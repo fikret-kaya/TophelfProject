@@ -104,7 +104,6 @@ public class ProfileActivity extends AppCompatActivity {
         relationTimes = new String[relations.size()];
         emails = new String[relations.size()];
 
-
         for(int i = 0; i < relations.size(); i++) {
             names[i] = user_name;
             places[i] = relations.get(i).getP_id();
