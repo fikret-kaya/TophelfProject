@@ -84,12 +84,12 @@ public class FriendActivity extends AppCompatActivity {
         Button friendship = (Button) findViewById(R.id.friendship);
         String addRemove = "0";
 
-        if(friendship.getText().equals("add friend")) {
+        if(friendship.getText().equals("+ Follow")) {
             addRemove = "1";
-            friendship.setText("friends");
+            friendship.setText("Following");
         } else {
             addRemove = "0";
-            friendship.setText("add friend");
+            friendship.setText("+ Follow");
         }
         boolean b = new AddRemoveFriendConn().execute(friend_id, user_id, addRemove).get();
 
@@ -112,7 +112,7 @@ public class FriendActivity extends AppCompatActivity {
             String user_id = params[1];
 
             try {
-                URL url = new URL("http://139.179.211.124:3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -173,9 +173,9 @@ public class FriendActivity extends AppCompatActivity {
             friendship = (Button) findViewById(R.id.friendship);
 
             if(responseString.equals("0")) {
-                friendship.setText("add friend");
+                friendship.setText("+ Follow");
             } else if(responseString.equals("1")) {
-                friendship.setText("friends");
+                friendship.setText("Following");
             }
 
         }
@@ -201,7 +201,7 @@ public class FriendActivity extends AppCompatActivity {
             String friend_id = params[0];
 
             try {
-                URL url = new URL("http://139.179.211.124:3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -318,7 +318,7 @@ public class FriendActivity extends AppCompatActivity {
             }
 
             try {
-                URL url = new URL("http://139.179.211.124:3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
