@@ -4,20 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -53,7 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
     private SharedPreferences sharedPref;
     private String u_id, user_name;
 
-    ArrayList<MyRating> myRatings;
+    ArrayList<Relation> relations;
 
     private String[] names, places, tags, comments, ratings;
 
@@ -84,7 +80,7 @@ public class ProfileActivity extends AppCompatActivity {
         user_name = sharedPref.getString("name", "N/A");
 
         try {
-            myRatings = new GetTimelineConn().execute(u_id).get();
+            relations = new GetTimelineConn().execute(u_id).get();
             boolean b = new GetFriendConn().execute(u_id).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -95,18 +91,18 @@ public class ProfileActivity extends AppCompatActivity {
         inner0 = (RelativeLayout) findViewById(R.id.inner0);
         profileImage = (ImageView) findViewById(R.id.image);
 
-        names = new String[myRatings.size()];
-        places = new String[myRatings.size()];
-        tags = new String[myRatings.size()];
-        comments = new String[myRatings.size()];
-        ratings = new String[myRatings.size()];
+        names = new String[relations.size()];
+        places = new String[relations.size()];
+        tags = new String[relations.size()];
+        comments = new String[relations.size()];
+        ratings = new String[relations.size()];
 
-        for(int i = 0; i < myRatings.size(); i++) {
+        for(int i = 0; i < relations.size(); i++) {
             names[i] = user_name;
-            places[i] = myRatings.get(i).getP_id();
-            tags[i] = myRatings.get(i).getT_id();
-            comments[i] = myRatings.get(i).getC_id();
-            ratings[i] = myRatings.get(i).getRating();
+            places[i] = relations.get(i).getP_id();
+            tags[i] = relations.get(i).getT_id();
+            comments[i] = relations.get(i).getC_id();
+            ratings[i] = relations.get(i).getRating();
         }
 
         votes = (ListView) findViewById(R.id.votes);
@@ -143,9 +139,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     //  Server connectıon
-    class GetTimelineConn extends AsyncTask<String, Void, ArrayList<MyRating>>
+    class GetTimelineConn extends AsyncTask<String, Void, ArrayList<Relation>>
     {
-        ArrayList<MyRating> ratings = new ArrayList<MyRating>();
+        ArrayList<Relation> relation = new ArrayList<Relation>();
 
         @Override
         protected void onPreExecute() {
@@ -153,7 +149,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<MyRating> doInBackground(String... params) {
+        protected ArrayList<Relation> doInBackground(String... params) {
             String user_id = params[0];
 
             try {
@@ -169,7 +165,7 @@ public class ProfileActivity extends AppCompatActivity {
                 conn.connect();
 
                 JSONObject jsonParam = new JSONObject();
-                jsonParam.put("type", "GetPlacename");
+                jsonParam.put("type", "GetRelation");
                 jsonParam.put("user_id", user_id);
 
                 OutputStream os = conn.getOutputStream();
@@ -199,11 +195,11 @@ public class ProfileActivity extends AppCompatActivity {
                     JSONArray jsonarray = new JSONArray(responseString);
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
-                        ratings.add(new MyRating(jsonParam.getString("placename"), jsonParam.getString("tagname"),
-                                jsonParam.getString("content"), jsonParam.getString("rating")));
+                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
+                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime")));
                     }
 
-                    return ratings;
+                    return relation;
                 }
                 else {
                     is = conn.getErrorStream();
@@ -216,12 +212,12 @@ public class ProfileActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return ratings;
+            return relation;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<MyRating> ratings) {
-            super.onPostExecute(ratings);
+        protected void onPostExecute(ArrayList<Relation> relation) {
+            super.onPostExecute(relation);
         }
     }
 

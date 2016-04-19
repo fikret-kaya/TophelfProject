@@ -1,30 +1,13 @@
 package com.example.fkrt.tophelf;
 
-import android.Manifest;
-import android.app.SearchManager;
-import android.app.SearchableInfo;
-import android.content.ClipData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SearchEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -35,18 +18,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,8 +42,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Objects;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
@@ -77,11 +58,12 @@ public class MainActivity extends AppCompatActivity
     private ListView searchList, placeList;
     private SharedPreferences sharedPref;
 
+    ArrayList<String> friendsIDs;
+    ArrayList<Relation> relations;
+
+    private String[] names, places, tags, comments, ratings;
+
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
-    String[] names = {"Name Surname 1", "Name Surname 2", "Name Surname 3", "Name Surname 4", "Name Surname 5", "Name Surname 6", "Name Surname 7", "Name Surname 8", "Name Surname 9", "Name Surname 10"};
-    String[] places = {"Place 1", "Place 2", "Place 3", "Place 4", "Place 5", "Place 6", "Place 7", "Place 8", "Place 9", "Place 10"};
-    String[] tags = {"Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag 5", "Tag 6", "Tag 7", "Tag 8", "Tag 9", "Tag 10"};
-    String[] ratings = {"3/5", "4/5", "5/5", "4/5", "3/5", "3/5", "1/5", "4/5", "2/5", "4/5"};
     int[] images = {R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo,
             R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo};
 
@@ -98,9 +80,36 @@ public class MainActivity extends AppCompatActivity
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         isFB = sharedPref.getBoolean("isFB", false);
         user_name = sharedPref.getString("name", "N/A");
-        fbID = sharedPref.getString("fbID","N/A");
+        fbID = sharedPref.getString("fbID", "N/A");
         u_id = sharedPref.getString("u_id", "N/A");
 
+        ArrayList<Relation> tempRelations;
+        try {
+            friendsIDs = new GetFriendsConn().execute(u_id).get();
+            relations = new ArrayList<Relation>();
+            for(int i = 0; i < friendsIDs.size(); i++) {
+                tempRelations = new GetTimelineConn().execute(friendsIDs.get(i)).get();
+                relations.addAll(tempRelations);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        names = new String[relations.size()];
+        places = new String[relations.size()];
+        tags = new String[relations.size()];
+        comments = new String[relations.size()];
+        ratings = new String[relations.size()];
+
+        for(int i = 0; i < relations.size(); i++) {
+            names[i] = relations.get(i).getUsername();
+            places[i] = relations.get(i).getP_id();
+            tags[i] = relations.get(i).getT_id();
+            comments[i] = relations.get(i).getC_id();
+            ratings[i] = relations.get(i).getRating();
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +149,7 @@ public class MainActivity extends AppCompatActivity
                 searchList.setVisibility(View.INVISIBLE);
                 placeList.setVisibility(View.VISIBLE);
 
-                if(query.charAt(0) == '@') {
+                if (query.charAt(0) == '@') {
                     String f_id = null;
                     try {
                         f_id = new GetFriendIdConn().execute(query.substring(1)).get();
@@ -172,13 +181,13 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        View hView =  navigationView.getHeaderView(0);
-        TextView name = (TextView)hView.findViewById(R.id.name);
+        View hView = navigationView.getHeaderView(0);
+        TextView name = (TextView) hView.findViewById(R.id.name);
         name.setText(user_name);
 
-        if(isFB){
+        if (isFB) {
 
-            ProfilePictureView imgvw = (ProfilePictureView)hView.findViewById(R.id.profilePicture);
+            ProfilePictureView imgvw = (ProfilePictureView) hView.findViewById(R.id.profilePicture);
             //ImageView imgvw = (ImageView)hView.findViewById(R.id.profilePicture);
            /* ProfilePictureView fb = new ProfilePictureView(this);
             fb.setProfileId(user_id);
@@ -188,7 +197,7 @@ public class MainActivity extends AppCompatActivity
             imgvw.setImageBitmap(bitmap);*/
             imgvw.setProfileId(fbID);
 
-        } else{
+        } else {
             //ImageView imgvw = (ImageView)hView.findViewById(R.id.profilePicture);
            /* ProfilePictureView fb = new ProfilePictureView(this);
             fb.setProfileId(user_id);
@@ -251,9 +260,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_helpfeedback) {
 
         } else if (id == R.id.nav_logout) {
-            if(isFB){
+            if (isFB) {
                 LoginManager.getInstance().logOut();
-            }else{
+            } else {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putBoolean("isLogin", false);
                 editor.commit();
@@ -268,8 +277,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     //  Server connectıon
-    class GetFriendIdConn extends AsyncTask<String, Void, String>
-    {
+    class GetFriendIdConn extends AsyncTask<String, Void, String> {
         int f_id = -1;
 
         @Override
@@ -282,7 +290,7 @@ public class MainActivity extends AppCompatActivity
             String friend_name = params[0];
 
             try {
-                URL url = new URL("http://139.179.211.124:3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                URL url = new URL("http://" + getResources().getString(R.string.ip) + ":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -313,18 +321,17 @@ public class MainActivity extends AppCompatActivity
                     BufferedReader rd = new BufferedReader(new InputStreamReader(is));
                     String line, responseString;
                     StringBuffer response = new StringBuffer();
-                    while((line = rd.readLine()) != null) {
+                    while ((line = rd.readLine()) != null) {
                         response.append(line);
                     }
                     rd.close();
                     responseString = response.toString();
-                    responseString =responseString.substring(1, response.length() - 1);
+                    responseString = responseString.substring(1, response.length() - 1);
 
                     jsonParam = new JSONObject(responseString);
                     f_id = Integer.parseInt(jsonParam.getString("u_id"));
 
-                }
-                else {
+                } else {
                     is = conn.getErrorStream();
                 }
 
@@ -341,6 +348,171 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String str) {
             super.onPostExecute(str);
+        }
+    }
+
+    //  Server connectıon
+    class GetFriendsConn extends AsyncTask<String, Void, ArrayList<String>> {
+
+        ArrayList<String> friendsIDs = new ArrayList<String>();
+        private String username, email, images, ratings;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(String... params) {
+            String user_id = params[0];
+
+            try {
+                URL url = new URL("http://" + getResources().getString(R.string.ip) + ":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "GetFriends");
+                jsonParam.put("user_id", user_id);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+                InputStream is = null;
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while ((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    //responseString = responseString.substring(1, response.length() - 1);
+
+                    JSONArray jsonarray = new JSONArray(responseString);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        jsonParam = jsonarray.getJSONObject(i);
+                        friendsIDs.add(jsonParam.getString("u_id2"));
+                    }
+
+                } else {
+                    is = conn.getErrorStream();
+                }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return friendsIDs;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> friendsIDs) {
+            super.onPostExecute(friendsIDs);
+        }
+
+    }
+
+    //  Server connectıon
+    class GetTimelineConn extends AsyncTask<String, Void, ArrayList<Relation>>
+    {
+        ArrayList<Relation> relation = new ArrayList<Relation>();
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<Relation> doInBackground(String... params) {
+            String user_id = params[0];
+
+            try {
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "GetRelation");
+                jsonParam.put("user_id", user_id);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+                InputStream is = null;
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    //responseString =responseString.substring(1, response.length() - 1);
+
+                    JSONArray jsonarray = new JSONArray(responseString);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        jsonParam = jsonarray.getJSONObject(i);
+                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
+                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime")));
+                    }
+
+                    return relation;
+                }
+                else {
+                    is = conn.getErrorStream();
+                }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return relation;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Relation> relation) {
+            super.onPostExecute(relation);
         }
     }
 }
