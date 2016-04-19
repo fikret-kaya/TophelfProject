@@ -10,7 +10,7 @@
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_vote">VoteActivity</string>
     <string name="app_id">910339232416309</string>
-    <string name="ip">139.179.211.124</string>
+    <string name="ip">139.179.211.156</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
