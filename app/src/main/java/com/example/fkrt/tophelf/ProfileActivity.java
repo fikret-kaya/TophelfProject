@@ -119,7 +119,22 @@ public class ProfileActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 searchList.setVisibility(View.INVISIBLE);
                 inner0.setVisibility(View.VISIBLE);
-                return false;
+
+                if (query.charAt(0) == '@') {
+                    String f_id = null;
+                    try {
+                        f_id = new GetFriendIdConn().execute(query.substring(1)).get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                    intent = new Intent(getApplicationContext(), FriendActivity.class);
+                    intent.putExtra("friend_id", f_id);
+                    startActivity(intent);
+                }
+
+                return true;
             }
 
             @Override
@@ -313,6 +328,81 @@ public class ProfileActivity extends AppCompatActivity {
             name.setText(username);
             rating = (TextView) findViewById(R.id.rating);
             rating.setText("Rating : " + ratings);
+        }
+    }
+
+    //  Server connectıon
+    class GetFriendIdConn extends AsyncTask<String, Void, String> {
+        int f_id = -1;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String friend_name = params[0];
+
+            try {
+                URL url = new URL("http://" + getResources().getString(R.string.ip) + ":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "GetUserId");
+                jsonParam.put("username", friend_name);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+                InputStream is = null;
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while ((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    responseString = responseString.substring(1, response.length() - 1);
+
+                    jsonParam = new JSONObject(responseString);
+                    f_id = Integer.parseInt(jsonParam.getString("u_id"));
+
+                } else {
+                    is = conn.getErrorStream();
+                }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return Integer.toString(f_id);
+        }
+
+        @Override
+        protected void onPostExecute(String str) {
+            super.onPostExecute(str);
         }
     }
 }
