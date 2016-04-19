@@ -41,6 +41,8 @@ public class FriendActivity extends AppCompatActivity {
     private SharedPreferences sharedPref;
     private boolean isFB;
 
+    String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
