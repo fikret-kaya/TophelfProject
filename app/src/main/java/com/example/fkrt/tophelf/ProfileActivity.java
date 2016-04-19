@@ -115,7 +115,6 @@ public class ProfileActivity extends AppCompatActivity {
             emails[i] = relations.get(i).getEmail();
         }
 
-
         votes = (ListView) findViewById(R.id.votes);
         ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings, relationTimes,emails);
         votes.setAdapter(listRowAdapter);
