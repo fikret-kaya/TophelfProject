@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -87,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
     private AccessToken accessToken;
     public SharedPreferences sharedpreferences;
     private boolean isLogin;
+    private ProgressDialog progress;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -272,6 +274,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
     }
+
+
     // register now
     public void onClick2(View v) {
         intent = new Intent(this, RegisterActivity.class);
@@ -331,6 +335,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progress = ProgressDialog.show(context, "Log-in", "Loading...", true, false);
         }
 
         @Override

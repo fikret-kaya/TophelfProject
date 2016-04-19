@@ -43,6 +43,7 @@ public class FriendActivity extends AppCompatActivity {
     private SharedPreferences sharedPref;
     private boolean isFB;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,7 +178,6 @@ public class FriendActivity extends AppCompatActivity {
             } else if(responseString.equals("1")) {
                 friendship.setText("Following");
             }
-
         }
     }
 
