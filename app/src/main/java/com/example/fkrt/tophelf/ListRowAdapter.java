@@ -94,7 +94,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 String pp = places[position];
                 String tt = tags[position];
                 String rr = ratings[position];
-                String p_id = null, p_info = null;
+                String p_id = null, p_info = null, p_loc = null;
 
                 String placeIDinfoArray[] = null;
                 try {
@@ -107,6 +107,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
 
                 p_id = placeIDinfoArray[0];
                 p_info = placeIDinfoArray[1];
+                p_loc = placeIDinfoArray[2];
 
                 if(p_id != null) {
                     intent = new Intent(context, TagForPlace.class);
@@ -114,6 +115,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                     intent.putExtra("place", pp);
                     intent.putExtra("placeID", p_id);
                     intent.putExtra("placeInfo", p_info);
+                    intent.putExtra("placeLoc", p_loc);
                     intent.putExtra("tag", tt);
                     intent.putExtra("rating", rr);
                     context.startActivity(intent);
@@ -144,7 +146,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     class GetPlaceIDinfo extends AsyncTask<String, Void, String[]>
     {
         ArrayList<Relation> relation = new ArrayList<Relation>();
-        String returns[] = new String[2];
+        String returns[] = new String[3];
 
         @Override
         protected void onPreExecute() {
@@ -168,7 +170,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 conn.connect();
 
                 JSONObject jsonParam = new JSONObject();
-                jsonParam.put("type", "GetPlaceIdInfo");
+                jsonParam.put("type", "GetPlace");
                 jsonParam.put("placename", p_name);
 
                 OutputStream os = conn.getOutputStream();
@@ -198,6 +200,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                     jsonParam = new JSONObject(responseString);
                     returns[0] = jsonParam.getString("p_id");
                     returns[1] = jsonParam.getString("info");
+                    returns[2] = jsonParam.getString("location");
                     conn.disconnect();
 
                     return returns;
