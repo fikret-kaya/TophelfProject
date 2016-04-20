@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity
 
 
         placeList = (ListView) findViewById(R.id.placelist);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings, relationTimes, emails);
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, comments, ratings, relationTimes, emails);
         placeList.setAdapter(listRowAdapter);
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);

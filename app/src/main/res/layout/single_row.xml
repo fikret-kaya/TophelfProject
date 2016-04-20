@@ -19,27 +19,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="16dp"
-        android:text="Name Surname 1"
-        android:id="@+id/name"
-        android:textColor="#2D96C4"
-        android:gravity="center"
-        android:layout_alignTop="@+id/image"
+        android:textSize="14dp"
+        android:text="Comments are here Comments are here "
+        android:id="@+id/comment"
+        android:visibility="gone"
         android:layout_toRightOf="@+id/image"
-        android:layout_toEndOf="@+id/image" />
+        android:layout_toLeftOf="@+id/plus"
+        android:layout_below="@+id/image" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="14dp"
+        android:textSize="16dp"
+        android:text="Name Surname 1"
+        android:id="@+id/name"
+        android:gravity="center"
+        android:layout_alignTop="@+id/image"
+        android:layout_toRightOf="@+id/image"
+        android:layout_toEndOf="@+id/image"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="15dp"
         android:text="Place 1"
         android:id="@+id/place"
-        android:textColor="#2D96C4"
+        android:textColor="#55B1D9"
         android:gravity="center"
         android:layout_below="@+id/name"
         android:layout_toRightOf="@+id/image"
-        android:layout_toEndOf="@+id/image" />
+        android:layout_toEndOf="@+id/image"
+        android:textStyle="bold" />
 
 
     <TextView
@@ -49,20 +62,21 @@
         android:textSize="14dp"
         android:text="#tag1"
         android:id="@+id/tag"
-        android:textColor="#2D96C4"
+        android:textColor="#55B1D9"
         android:gravity="center"
         android:layout_below="@+id/place"
         android:layout_toRightOf="@+id/image"
-        android:layout_toEndOf="@+id/image" />
+        android:layout_toEndOf="@+id/image"
+        android:textStyle="italic" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="@drawable/minuse"
+        android:layout_marginTop="12dp"
         android:layout_marginLeft="5dp"
         android:id="@+id/minus"
-        android:layout_centerInParent="true"
         android:layout_toLeftOf="@+id/plus" />
 
     <TextView
@@ -72,8 +86,8 @@
         android:textSize="16dp"
         android:text="4/5"
         android:id="@+id/rating"
+        android:layout_marginTop="25dp"
         android:textColor="#2D96C4"
-        android:layout_centerInParent="true"
         android:layout_toLeftOf="@+id/minus"
         android:layout_toStartOf="@+id/minus" />
 
@@ -82,8 +96,10 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="@drawable/pluse"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:id="@+id/plus"
-        android:layout_centerInParent="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
