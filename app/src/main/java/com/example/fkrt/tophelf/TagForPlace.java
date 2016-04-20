@@ -49,6 +49,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -65,6 +66,8 @@ public class TagForPlace extends AppCompatActivity
     private ListView commentsV, searchList, votes;
     private ImageView mapV;
     SharedPreferences sharedPref;
+
+    ArrayList<String> ranks;
 
     ArrayList<Relation> relations;
 
@@ -127,11 +130,30 @@ public class TagForPlace extends AppCompatActivity
             ratings[i] = relations.get(i).getRating();
             relationTimes[i] = relations.get(i).getRelationTime();
             emails[i] = relations.get(i).getEmail();
-            relation_ids = new String[relations.size()];
+            relation_ids[i] = relations.get(i).getR_id();
 
             overallRating += Double.parseDouble(ratings[i]);
         }
         overallRating /= ratings.length;
+
+        String[] ranksArr;
+        try {
+            if(relation_ids.length == 0) {
+                relation_ids = new String[1];
+                relation_ids[0] = "-1";
+            }
+            ranks = new GetRankingConn().execute(u_id).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        if(ranks.size() != 0) {
+            ranksArr = new String[ranks.size()];
+            ranksArr = ranks.toArray(ranksArr);
+        } else {
+            ranksArr = null;
+        }
 
         setContentView(R.layout.activity_tag_for_place);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -160,7 +182,7 @@ public class TagForPlace extends AppCompatActivity
         place = (TextView) findViewById(R.id.place);
         place.setText(p_name);
         rating = (TextView) findViewById(R.id.rating);
-        rating.setText("Overall : " + overallRating);
+        rating.setText("Overall : " + new DecimalFormat("#0.00").format(overallRating));
 
         placeInfo = (Button) findViewById(R.id.placeinfo);
         comments = (Button) findViewById(R.id.comments);
@@ -172,7 +194,7 @@ public class TagForPlace extends AppCompatActivity
         placeInfoV.setText(p_info);
         commentsV = (ListView) findViewById(R.id.commentsV);
         ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, commentsList,
-                ratings, relationTimes, emails, relation_ids);
+                ratings, relationTimes, emails, relation_ids, ranksArr);
         commentsV.setAdapter(listRowAdapter);
         mapV = (ImageView) findViewById(R.id.mapV);
 
@@ -505,6 +527,98 @@ public class TagForPlace extends AppCompatActivity
         @Override
         protected void onPostExecute(ArrayList<Relation> relation) {
             super.onPostExecute(relation);
+        }
+    }
+
+    //  Server connectıon
+    class GetRankingConn extends AsyncTask<String, Void, ArrayList<String>>
+    {
+        ArrayList<String> ranks = new ArrayList<String>();
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(String... params) {
+            String user_id = params[0];
+
+            try {
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "GetRankings");
+                jsonParam.put("user_id", user_id);
+
+                JSONArray jsonArr = new JSONArray();
+                JSONObject tempObject;
+                for(String rel : relation_ids) {
+                    tempObject = new JSONObject();
+                    tempObject.put("r_id",rel);
+                    jsonArr.put(tempObject);
+                }
+                jsonParam.put("r_ids",jsonArr);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+                InputStream is = null;
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    //responseString =responseString.substring(1, response.length() - 1);
+
+                    JSONArray jsonarray = new JSONArray(responseString);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        jsonParam = jsonarray.getJSONObject(i);
+                        ranks.add(jsonParam.getString("r_id"));
+                        ranks.add(jsonParam.getString("rank"));
+                    }
+
+                    return ranks;
+                }
+                else {
+                    is = conn.getErrorStream();
+                }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return ranks;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> ranks) {
+            super.onPostExecute(ranks);
         }
     }
 }

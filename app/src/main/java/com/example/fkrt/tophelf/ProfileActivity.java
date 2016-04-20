@@ -115,9 +115,11 @@ public class ProfileActivity extends AppCompatActivity {
             relation_ids = new String[relations.size()];
         }
 
+        String[] ranksArr = {"profile_activity"};
+
         votes = (ListView) findViewById(R.id.votes);
         ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, comments,
-                                                                ratings, relationTimes, emails, relation_ids);
+                                                                ratings, relationTimes, emails, relation_ids, ranksArr);
         votes.setAdapter(listRowAdapter);
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);

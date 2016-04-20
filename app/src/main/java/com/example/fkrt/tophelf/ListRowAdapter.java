@@ -2,7 +2,9 @@ package com.example.fkrt.tophelf;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 
 import com.facebook.login.widget.ProfilePictureView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,9 +48,10 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     String[] relationTimes;
     String[] emails;
     String[] relation_ids;
+    String[] ranks;
 
     ListRowAdapter(Context context, int images, String[] names, String[] places, String[] tags, String[] comments,
-                                        String[] ratings, String[] relationTimes, String[] emails, String[] relation_ids) {
+                                        String[] ratings, String[] relationTimes, String[] emails, String[] relation_ids, String[] ranks) {
         super(context, R.layout.single_row, R.id.place, places);
         this.context = context;
         this.images = images;
@@ -59,6 +63,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         this.relationTimes = relationTimes;
         this.emails = emails;
         this.relation_ids = relation_ids;
+        this.ranks = ranks;
     }
 
     /*placeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -89,6 +94,28 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         if( comments[position] != null ) {
             myComment.setVisibility(View.VISIBLE);
             myComment.setText(comments[position]);
+        }
+
+        if(ranks != null) {
+            if(ranks[0].equals("profile_activity")) {
+                myPlus.setVisibility(View.INVISIBLE);
+                myMinus.setVisibility(View.INVISIBLE);
+            } else {
+                for (int i = 0; i < ranks.length; i+=2){
+                    if (relation_ids[position].equals(ranks[i])) {
+                        if (ranks[i+1].equals("+")) {
+                            myPlus.setBackgroundResource(R.drawable.plusf);
+                            myMinus.setBackgroundResource(R.drawable.minuse);
+                            break;
+                        }
+                        if (ranks[i+1].equals("-")) {
+                            myMinus.setBackgroundResource(R.drawable.minusf);
+                            myPlus.setBackgroundResource(R.drawable.pluse);
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         myName.setText(names[position]);
@@ -132,9 +159,20 @@ public class ListRowAdapter extends ArrayAdapter<String> {
             }
         });
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        final String u_id = sharedPref.getString("u_id", "N/A");
+
         myMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    boolean b = new MakeRankingConn().execute(u_id,relation_ids[position],"-").get();
+                    String zirt = "";
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
                 myMinus.setBackgroundResource(R.drawable.minusf);
                 myPlus.setBackgroundResource(R.drawable.pluse);
             }
@@ -143,6 +181,13 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         myPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    boolean b = new MakeRankingConn().execute(u_id,relation_ids[position],"+").get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
                 myPlus.setBackgroundResource(R.drawable.plusf);
                 myMinus.setBackgroundResource(R.drawable.minuse);
             }
@@ -234,4 +279,87 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         }
     }
 
+    //  Server connectıon
+    class MakeRankingConn extends AsyncTask<String, Void, Boolean>
+    {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            String user_id = params[0];
+            String r_id = params[1];
+            String rank = params[2];
+
+            try {
+                URL url = new URL("http://"+context.getString(R.string.ip)+":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "MakeRankings");
+                jsonParam.put("user_id", user_id);
+                jsonParam.put("r_id",r_id);
+                jsonParam.put("rank",rank);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+                InputStream is = null;
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    //responseString =responseString.substring(1, response.length() - 1);
+
+                    JSONArray jsonarray = new JSONArray(responseString);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        jsonParam = jsonarray.getJSONObject(i);
+                    }
+
+                    return true;
+                }
+                else {
+                    is = conn.getErrorStream();
+                }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+        }
+    }
 }
