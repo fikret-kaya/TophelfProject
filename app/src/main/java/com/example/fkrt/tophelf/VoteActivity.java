@@ -1,6 +1,8 @@
 package com.example.fkrt.tophelf;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -53,6 +55,8 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
     private EditText place,tag,comment;
     private RatingBar rating;
     private String placeRate;
+    private ProgressDialog progress;
+    Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,10 +102,26 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
     public void onClick(View v) throws ExecutionException, InterruptedException {
         Toast.makeText(getApplicationContext(), "Thanks Your For Your Contribution", Toast.LENGTH_LONG).show();
 
-        boolean b = new Voteconn().execute(u_id,latitude+ "",longitude+"",place.getText().toString(),tag.getText().toString(),comment.getText().toString(), placeRate).get();
+        vote();
+        //boolean b = new Voteconn().execute(u_id,latitude+ "",longitude+"",place.getText().toString(),tag.getText().toString(),comment.getText().toString(), placeRate).get();
 
-        intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+       // intent = new Intent(this, MainActivity.class);
+        //startActivity(intent);
+    }
+
+    public void vote() {
+        progress = ProgressDialog.show(this, "Please wait !",
+                "Updating...", true);
+        new Thread() {
+            public void run() {
+                try {
+                    //Your upgrade method !
+                    boolean b = new Voteconn().execute(u_id,latitude+ "",longitude+"",place.getText().toString(),tag.getText().toString(),comment.getText().toString(), placeRate).get();
+                } catch (Exception e) {
+                }
+                progress.dismiss();
+            }
+        }.start();
     }
 
     @Override
@@ -131,6 +151,7 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            //progress = ProgressDialog.show(context, "Voting", "Loading...", true, false);
         }
 
         @Override
@@ -303,7 +324,7 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
 
                             if (statusCode >= 200 && statusCode < 400) {
 
-                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                intent = new Intent(getApplicationContext(), MainActivity.class);
                                 startActivity(intent);
                                 return true;
 
@@ -335,6 +356,7 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+            //progress.dismiss();
         }
     }
 
