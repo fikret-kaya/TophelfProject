@@ -32,6 +32,7 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 import org.json.JSONArray;
@@ -63,14 +64,14 @@ public class TagForPlace extends AppCompatActivity
     private Button placeInfo, comments, map;
     private ListView commentsV, searchList, votes;
     private ImageView mapV;
+    SharedPreferences sharedPref;
 
     ArrayList<Relation> relations;
 
     private String[] names, places, tags, commentsList, ratings, relationTimes, emails;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
-    int[] images = {R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo,
-            R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo};
+    int images = R.drawable.logo64;
 
     ArrayAdapter<String> arrayAdapter;
 
@@ -81,7 +82,7 @@ public class TagForPlace extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         isFB = sharedPref.getBoolean("isFB", false);
         user_name = sharedPref.getString("name", "N/A");
         u_id = sharedPref.getString("u_id", "N/A");
@@ -330,7 +331,13 @@ public class TagForPlace extends AppCompatActivity
         } else if (id == R.id.nav_helpfeedback) {
 
         } else if (id == R.id.nav_logout) {
-
+            if (isFB) {
+                LoginManager.getInstance().logOut();
+            } else {
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("isLogin", false);
+                editor.commit();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -502,7 +509,7 @@ class CommentsListRowAdapter extends ArrayAdapter<String> {
     Intent intent;
 
     Context context;
-    int[] images;
+    int images;
     String[] names;
     String[] places;
     String[] tags;
@@ -510,7 +517,7 @@ class CommentsListRowAdapter extends ArrayAdapter<String> {
     String[] relationTimes;
     String[] emails;
 
-    CommentsListRowAdapter(Context context, int images[], String[] names, String[] places, String[] tags, String[] ratings, String[] relationTimes, String[] emails) {
+    CommentsListRowAdapter(Context context, int images, String[] names, String[] places, String[] tags, String[] ratings, String[] relationTimes, String[] emails) {
         super(context, R.layout.single_row, R.id.place, places);
         this.context = context;
         this.images = images;

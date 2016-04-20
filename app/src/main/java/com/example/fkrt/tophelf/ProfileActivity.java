@@ -57,8 +57,7 @@ public class ProfileActivity extends AppCompatActivity {
     private String[] names, places, tags, comments, ratings, relationTimes, emails;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
-    int[] images = {R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo,
-            R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo};
+    int images = R.drawable.logo64;
 
     ArrayAdapter<String> arrayAdapter;
 

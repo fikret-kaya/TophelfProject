@@ -64,8 +64,7 @@ public class MainActivity extends AppCompatActivity
     private String[] names, places, tags, comments, ratings, relationTimes, emails;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
-    int[] images = {R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo,
-            R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo};
+    int images = R.drawable.logo64;
 
     ArrayAdapter<String> arrayAdapter;
 
@@ -521,7 +520,7 @@ class ListRowAdapter extends ArrayAdapter<String> {
     Intent intent;
 
     Context context;
-    int[] images;
+    int images;
     String[] names;
     String[] places;
     String[] tags;
@@ -529,7 +528,7 @@ class ListRowAdapter extends ArrayAdapter<String> {
     String[] relationTimes;
     String[] emails;
 
-    ListRowAdapter(Context context, int images[], String[] names, String[] places, String[] tags, String[] ratings, String[] relationTimes, String[] emails) {
+    ListRowAdapter(Context context, int images, String[] names, String[] places, String[] tags, String[] ratings, String[] relationTimes, String[] emails) {
         super(context, R.layout.single_row, R.id.place, places);
         this.context = context;
         this.images = images;
