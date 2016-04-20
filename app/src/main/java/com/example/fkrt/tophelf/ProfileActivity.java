@@ -137,9 +137,12 @@ public class ProfileActivity extends AppCompatActivity {
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     }
-                    intent = new Intent(getApplicationContext(), FriendActivity.class);
-                    intent.putExtra("friend_id", f_id);
-                    startActivity(intent);
+
+                    if(f_id.equals("-1")) {
+                        intent = new Intent(getApplicationContext(), FriendActivity.class);
+                        intent.putExtra("friend_id", f_id);
+                        startActivity(intent);
+                    }
                 }
 
                 return true;
@@ -331,11 +334,9 @@ public class ProfileActivity extends AppCompatActivity {
             super.onPostExecute(aBoolean);
 
             image = (ProfilePictureView) findViewById(R.id.image);
-            if( !isFB){
-                image.setProfileId("10209196878817858");
-            }else {
-                image.setProfileId(fbID);
-            }
+            if(!email.contains("@"))
+                image.setProfileId(email);
+
             name = (TextView) findViewById(R.id.name);
             name.setText(username);
             rating = (TextView) findViewById(R.id.rating);
