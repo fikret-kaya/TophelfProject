@@ -160,6 +160,7 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
                 jsonParam.put("type", "Place");
                 jsonParam.put("location", latitude+"-"+longitude);
                 jsonParam.put("placename", placeName);
+                jsonParam.put("info", comment);
 
                 OutputStream os = conn.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(

@@ -411,7 +411,7 @@ public class FriendActivity extends AppCompatActivity {
                 conn.connect();
 
                 JSONObject jsonParam = new JSONObject();
-                jsonParam.put("type", "GetRelation");
+                jsonParam.put("type", "GetRelations");
                 jsonParam.put("user_id", user_id);
 
                 OutputStream os = conn.getOutputStream();
