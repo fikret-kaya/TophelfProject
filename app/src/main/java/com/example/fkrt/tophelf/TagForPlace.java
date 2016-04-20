@@ -169,7 +169,7 @@ public class TagForPlace extends AppCompatActivity
         placeInfoV = (TextView) findViewById(R.id.placeinfoV);
         placeInfoV.setText(p_info);
         commentsV = (ListView) findViewById(R.id.commentsV);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings, relationTimes,emails);
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, commentsList, ratings, relationTimes,emails);
         commentsV.setAdapter(listRowAdapter);
         mapV = (ImageView) findViewById(R.id.mapV);
 

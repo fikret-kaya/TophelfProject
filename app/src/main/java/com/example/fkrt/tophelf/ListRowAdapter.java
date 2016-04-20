@@ -40,17 +40,19 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     String[] names;
     String[] places;
     String[] tags;
+    String[] comments;
     String[] ratings;
     String[] relationTimes;
     String[] emails;
 
-    ListRowAdapter(Context context, int images, String[] names, String[] places, String[] tags, String[] ratings, String[] relationTimes, String[] emails) {
+    ListRowAdapter(Context context, int images, String[] names, String[] places, String[] tags, String[] comments, String[] ratings, String[] relationTimes, String[] emails) {
         super(context, R.layout.single_row, R.id.place, places);
         this.context = context;
         this.images = images;
         this.names = names;
         this.places = places;
         this.tags = tags;
+        this.comments = comments;
         this.ratings = ratings;
         this.relationTimes = relationTimes;
         this.emails = emails;
@@ -72,6 +74,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         TextView myName = (TextView) row.findViewById(R.id.name);
         TextView myPlace = (TextView) row.findViewById(R.id.place);
         TextView myTag = (TextView) row.findViewById(R.id.tag);
+        TextView myComment = (TextView) row.findViewById(R.id.comment);
         TextView myRating = (TextView) row.findViewById(R.id.rating);
         final Button myMinus = (Button) row.findViewById(R.id.minus);
         final Button myPlus = (Button) row.findViewById(R.id.plus);
@@ -80,6 +83,11 @@ public class ListRowAdapter extends ArrayAdapter<String> {
             myImage.setProfileId("10209196878817858");
         }else {
             myImage.setProfileId(emails[position]);
+        }
+
+        if( comments[position] != null ) {
+            myComment.setVisibility(View.VISIBLE);
+            myComment.setText(comments[position]);
         }
 
         myName.setText(names[position]);
