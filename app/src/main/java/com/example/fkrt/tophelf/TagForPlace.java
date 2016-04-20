@@ -272,23 +272,14 @@ public class TagForPlace extends AppCompatActivity
     }
     // Map
     public void onClick3(View v) {
-       /* placeInfoV.setVisibility(View.INVISIBLE);
-        placeInfo.setEnabled(true);
-        commentsV.setVisibility(View.INVISIBLE);
-        comments.setEnabled(true);
-        mapV.setVisibility(View.VISIBLE);
-        map.setEnabled(false);
 
-        placeInfo.setTextColor(Color.parseColor("#7cc3e1"));
-        placeInfo.setTypeface(null, Typeface.NORMAL);
-        comments.setTextColor(Color.parseColor("#7cc3e1"));
-        comments.setTypeface(null, Typeface.NORMAL);
-        map.setTextColor(Color.parseColor("#2D96C4"));
-        map.setTypeface(null, Typeface.BOLD);*/
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        editor.putString("place_location", p_loc);
+        editor.putString("place_name", p_name);
+        editor.commit();
 
         intent = new Intent(this, MapsActivity.class);
-        intent.putExtra("place_location", p_loc);
-        intent.putExtra("place_name", p_name);
         startActivity(intent);
     }
 
