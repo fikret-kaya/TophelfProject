@@ -78,7 +78,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
 
         if( emails[position].contains("@")){
             myImage.setProfileId("10209196878817858");
-        }else {
+        } else {
             myImage.setProfileId(emails[position]);
         }
 
