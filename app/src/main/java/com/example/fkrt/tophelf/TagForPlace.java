@@ -56,8 +56,8 @@ public class TagForPlace extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Intent intent;
-
     Bundle bundle;
+
     private RelativeLayout inner0;
     private SearchView searchView;
     private TextView place, rating, placeInfoV;
@@ -67,6 +67,8 @@ public class TagForPlace extends AppCompatActivity
     SharedPreferences sharedPref;
 
     ArrayList<Relation> relations;
+
+    private String p_name, p_id, p_info, p_loc;
 
     private String[] names, places, tags, commentsList, ratings, relationTimes, emails;
 
@@ -90,9 +92,10 @@ public class TagForPlace extends AppCompatActivity
 
         bundle = getIntent().getExtras();
         String nn = bundle.getString("name");
-        String pp = bundle.getString("place");
-        String p_id = bundle.getString("placeID");
-        String p_info = bundle.getString("placeInfo");
+        p_name = bundle.getString("place");
+        p_id = bundle.getString("placeID");
+        p_info = bundle.getString("placeInfo");
+        p_loc = bundle.getString("placeLoc");
         String tt = bundle.getString("tag");
         String rr = bundle.getString("rating");
         setTitle(nn);
@@ -153,7 +156,7 @@ public class TagForPlace extends AppCompatActivity
         inner0 = (RelativeLayout) findViewById(R.id.inner0);
 
         place = (TextView) findViewById(R.id.place);
-        place.setText(pp);
+        place.setText(p_name);
         rating = (TextView) findViewById(R.id.rating);
         rating.setText("Overall : " + overallRating);
 
@@ -284,6 +287,8 @@ public class TagForPlace extends AppCompatActivity
         map.setTypeface(null, Typeface.BOLD);*/
 
         intent = new Intent(this, MapsActivity.class);
+        intent.putExtra("place_location", p_loc);
+        intent.putExtra("place_name", p_name);
         startActivity(intent);
     }
 
