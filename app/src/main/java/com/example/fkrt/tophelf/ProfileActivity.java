@@ -141,7 +141,7 @@ public class ProfileActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    if(f_id.equals("-1")) {
+                    if(!f_id.equals("-1")) {
                         intent = new Intent(getApplicationContext(), FriendActivity.class);
                         intent.putExtra("friend_id", f_id);
                         startActivity(intent);
