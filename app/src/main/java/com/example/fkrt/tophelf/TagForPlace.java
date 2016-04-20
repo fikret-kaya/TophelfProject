@@ -197,7 +197,7 @@ public class TagForPlace extends AppCompatActivity
                         e.printStackTrace();
                     }
 
-                    if(f_id.equals("-1")) {
+                    if(!f_id.equals("-1")) {
                         intent = new Intent(getApplicationContext(), FriendActivity.class);
                         intent.putExtra("friend_id", f_id);
                         startActivity(intent);
@@ -325,6 +325,8 @@ public class TagForPlace extends AppCompatActivity
         } else if (id == R.id.nav_friends) {
 
         } else if (id == R.id.nav_votesComments) {
+            intent = new Intent(this, MainActivity.class);
+            this.startActivity(intent);
 
         } else if (id == R.id.nav_settings) {
 
@@ -338,6 +340,8 @@ public class TagForPlace extends AppCompatActivity
                 editor.putBoolean("isLogin", false);
                 editor.commit();
             }
+            intent = new Intent(this, LoginActivity.class);
+            this.startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
