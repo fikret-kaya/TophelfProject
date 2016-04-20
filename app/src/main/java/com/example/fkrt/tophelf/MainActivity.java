@@ -458,7 +458,7 @@ public class MainActivity extends AppCompatActivity
                 conn.connect();
 
                 JSONObject jsonParam = new JSONObject();
-                jsonParam.put("type", "GetRelation");
+                jsonParam.put("type", "GetRelations");
                 jsonParam.put("user_id", user_id);
 
                 OutputStream os = conn.getOutputStream();
@@ -514,6 +514,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 }
+<<<<<<< HEAD
 
 class ListRowAdapter extends ArrayAdapter<String> {
 
@@ -607,3 +608,5 @@ class ListRowAdapter extends ArrayAdapter<String> {
     }
 
 }
+=======
+>>>>>>> a35e1699baa7b8ad3a93e5bc4c6df6ade648cf1b

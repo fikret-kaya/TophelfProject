@@ -68,23 +68,12 @@
                 android:text="Place X"
                 android:id="@+id/place"
                 android:textColor="#2D96C4"
-                android:textSize="18dp"
+                android:textSize="24dp"
                 android:gravity="center"
                 android:layout_alignTop="@+id/image"
                 android:layout_toRightOf="@+id/image"
                 android:layout_toEndOf="@+id/image" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Tag Y"
-                android:id="@+id/tag"
-                android:textColor="#2D96C4"
-                android:textSize="18dp"
-                android:layout_below="@+id/place"
-                android:layout_toRightOf="@+id/image"
-                android:layout_toEndOf="@+id/image" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -94,7 +83,7 @@
                 android:id="@+id/rating"
                 android:textColor="#2D96C4"
                 android:textSize="18dp"
-                android:layout_below="@+id/tag"
+                android:layout_below="@+id/place"
                 android:layout_toRightOf="@+id/image"
                 android:layout_toEndOf="@+id/image" />
 

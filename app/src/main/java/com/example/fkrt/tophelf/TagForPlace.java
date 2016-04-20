@@ -60,7 +60,7 @@ public class TagForPlace extends AppCompatActivity
     Bundle bundle;
     private RelativeLayout inner0;
     private SearchView searchView;
-    private TextView place, tag, rating, placeInfoV;
+    private TextView place, rating, placeInfoV;
     private Button placeInfo, comments, map;
     private ListView commentsV, searchList, votes;
     private ImageView mapV;
@@ -91,12 +91,14 @@ public class TagForPlace extends AppCompatActivity
         bundle = getIntent().getExtras();
         String nn = bundle.getString("name");
         String pp = bundle.getString("place");
+        String p_id = bundle.getString("placeID");
+        String p_info = bundle.getString("placeInfo");
         String tt = bundle.getString("tag");
         String rr = bundle.getString("rating");
         setTitle(nn);
 
         try {
-            relations = new GetTimelineConn().execute(pp).get();
+            relations = new GetTimelineConn().execute(p_id).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -111,15 +113,20 @@ public class TagForPlace extends AppCompatActivity
         relationTimes = new String[relations.size()];
         emails = new String[relations.size()];
 
+        double overallRating = 0;
+
         for(int i = 0; i < relations.size(); i++) {
-            names[i] = user_name;
+            names[i] = relations.get(i).getUsername();
             places[i] = relations.get(i).getP_id();
             tags[i] = relations.get(i).getT_id();
             commentsList[i] = relations.get(i).getC_id();
             ratings[i] = relations.get(i).getRating();
             relationTimes[i] = relations.get(i).getRelationTime();
             emails[i] = relations.get(i).getEmail();
+
+            overallRating += Double.parseDouble(ratings[i]);
         }
+        overallRating /= ratings.length;
 
         setContentView(R.layout.activity_tag_for_place);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -147,10 +154,8 @@ public class TagForPlace extends AppCompatActivity
 
         place = (TextView) findViewById(R.id.place);
         place.setText(pp);
-        tag = (TextView) findViewById(R.id.tag);
-        tag.setText(tt);
         rating = (TextView) findViewById(R.id.rating);
-        rating.setText("Overall : " + rr);
+        rating.setText("Overall : " + overallRating);
 
         placeInfo = (Button) findViewById(R.id.placeinfo);
         comments = (Button) findViewById(R.id.comments);
@@ -159,8 +164,9 @@ public class TagForPlace extends AppCompatActivity
         map = (Button) findViewById(R.id.map);
 
         placeInfoV = (TextView) findViewById(R.id.placeinfoV);
+        placeInfoV.setText(p_info);
         commentsV = (ListView) findViewById(R.id.commentsV);
-        CommentsListRowAdapter listRowAdapter = new CommentsListRowAdapter(this, images, names, places, tags, ratings, relationTimes,emails);
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings, relationTimes,emails);
         commentsV.setAdapter(listRowAdapter);
         mapV = (ImageView) findViewById(R.id.mapV);
 
@@ -432,7 +438,7 @@ public class TagForPlace extends AppCompatActivity
 
         @Override
         protected ArrayList<Relation> doInBackground(String... params) {
-            String place_name = params[0];
+            String p_id = params[0];
 
             try {
                 URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
@@ -447,8 +453,8 @@ public class TagForPlace extends AppCompatActivity
                 conn.connect();
 
                 JSONObject jsonParam = new JSONObject();
-                jsonParam.put("type", "GetRelation");
-                jsonParam.put("user_id", place_name);
+                jsonParam.put("type", "GetPlaceRelations");
+                jsonParam.put("place_id", p_id);
 
                 OutputStream os = conn.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(
@@ -504,6 +510,7 @@ public class TagForPlace extends AppCompatActivity
     }
 }
 
+<<<<<<< HEAD
 class CommentsListRowAdapter extends ArrayAdapter<String> {
 
     Intent intent;
@@ -596,3 +603,5 @@ class CommentsListRowAdapter extends ArrayAdapter<String> {
         return row;
     }
 }
+=======
+>>>>>>> a35e1699baa7b8ad3a93e5bc4c6df6ade648cf1b
