@@ -91,6 +91,7 @@ public class TagForPlace extends AppCompatActivity
         String nn = bundle.getString("name");
         String pp = bundle.getString("place");
         String p_id = bundle.getString("placeID");
+        String p_info = bundle.getString("placeInfo");
         String tt = bundle.getString("tag");
         String rr = bundle.getString("rating");
         setTitle(nn);
@@ -162,6 +163,7 @@ public class TagForPlace extends AppCompatActivity
         map = (Button) findViewById(R.id.map);
 
         placeInfoV = (TextView) findViewById(R.id.placeinfoV);
+        placeInfoV.setText(p_info);
         commentsV = (ListView) findViewById(R.id.commentsV);
         ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, ratings, relationTimes,emails);
         commentsV.setAdapter(listRowAdapter);
