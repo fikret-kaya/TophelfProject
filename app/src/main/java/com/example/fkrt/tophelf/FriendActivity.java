@@ -51,8 +51,6 @@ public class FriendActivity extends AppCompatActivity {
     private SharedPreferences sharedPref;
     private boolean isFB;
 
-<<<<<<< HEAD
-=======
     private RelativeLayout inner0;
     private SearchView searchView;
     private ListView votes;
@@ -63,11 +61,9 @@ public class FriendActivity extends AppCompatActivity {
     private String[] names, places, tags, comments, ratings, relationTimes, emails;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
-    int[] images = {R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo,
-            R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo};
+    int images = R.drawable.logo64;
 
     ArrayAdapter<String> arrayAdapter;
->>>>>>> 69df1fffd82774b53ea8598a00bdb6de6a337089
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
