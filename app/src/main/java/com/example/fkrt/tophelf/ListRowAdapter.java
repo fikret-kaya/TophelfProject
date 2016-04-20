@@ -36,7 +36,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     Intent intent;
 
     Context context;
-    int[] images;
+    int images;
     String[] names;
     String[] places;
     String[] tags;
@@ -44,7 +44,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     String[] relationTimes;
     String[] emails;
 
-    ListRowAdapter(Context context, int images[], String[] names, String[] places, String[] tags, String[] ratings, String[] relationTimes, String[] emails) {
+    ListRowAdapter(Context context, int images, String[] names, String[] places, String[] tags, String[] ratings, String[] relationTimes, String[] emails) {
         super(context, R.layout.single_row, R.id.place, places);
         this.context = context;
         this.images = images;
