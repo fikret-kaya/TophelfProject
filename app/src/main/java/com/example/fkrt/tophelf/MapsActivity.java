@@ -1,5 +1,7 @@
 package com.example.fkrt.tophelf;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -12,7 +14,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    Bundle bundle;
+    private SharedPreferences sharedPref;
 
     private String p_loc, p_name;
     private Double lat, lng;
@@ -28,8 +30,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        p_loc = bundle.getString("place_location");
-        p_name = bundle.getString("place_name");
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        p_loc = sharedPref.getString("place_location", "N/A");
+        p_name = sharedPref.getString("place_name","N/A");
 
         String[] temp = p_loc.split("-");
         lat = Double.parseDouble(temp[0]);
@@ -53,6 +56,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Add a marker in Sydney and move the camera
         LatLng myPlace = new LatLng(lat, lng);
         mMap.addMarker(new MarkerOptions().position(myPlace).title(p_name));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myPlace));
+        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(lat,lng) , 14.0f) );
     }
 }
