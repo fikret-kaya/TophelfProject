@@ -51,6 +51,8 @@ public class FriendActivity extends AppCompatActivity {
     private SharedPreferences sharedPref;
     private boolean isFB;
 
+<<<<<<< HEAD
+=======
     private RelativeLayout inner0;
     private SearchView searchView;
     private ListView votes;
@@ -65,6 +67,7 @@ public class FriendActivity extends AppCompatActivity {
             R.drawable.logo, R.drawable.logo, R.drawable.logo, R.drawable.logo};
 
     ArrayAdapter<String> arrayAdapter;
+>>>>>>> 69df1fffd82774b53ea8598a00bdb6de6a337089
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -267,7 +270,6 @@ public class FriendActivity extends AppCompatActivity {
             } else if(responseString.equals("1")) {
                 friendship.setText("Following");
             }
-
         }
     }
 
