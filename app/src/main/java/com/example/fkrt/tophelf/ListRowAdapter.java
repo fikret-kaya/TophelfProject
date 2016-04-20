@@ -94,21 +94,26 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 String pp = places[position];
                 String tt = tags[position];
                 String rr = ratings[position];
-                String p_id = null;
+                String p_id = null, p_info = null;
 
+                String placeIDinfoArray[] = null;
                 try {
-                    p_id  = new GetPlaceID().execute(pp).get();
+                    placeIDinfoArray = new GetPlaceIDinfo().execute(pp).get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
 
+                p_id = placeIDinfoArray[0];
+                p_info = placeIDinfoArray[1];
+
                 if(p_id != null) {
                     intent = new Intent(context, TagForPlace.class);
                     intent.putExtra("name", nn);
                     intent.putExtra("place", pp);
                     intent.putExtra("placeID", p_id);
+                    intent.putExtra("placeInfo", p_info);
                     intent.putExtra("tag", tt);
                     intent.putExtra("rating", rr);
                     context.startActivity(intent);
@@ -136,9 +141,10 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     }
 
     //  Server connectıon
-    class GetPlaceID extends AsyncTask<String, Void, String>
+    class GetPlaceIDinfo extends AsyncTask<String, Void, String[]>
     {
         ArrayList<Relation> relation = new ArrayList<Relation>();
+        String returns[] = new String[2];
 
         @Override
         protected void onPreExecute() {
@@ -146,7 +152,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String[] doInBackground(String... params) {
             String p_name = params[0];
 
             try {
@@ -162,7 +168,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 conn.connect();
 
                 JSONObject jsonParam = new JSONObject();
-                jsonParam.put("type", "GetPlaceId");
+                jsonParam.put("type", "GetPlaceIdInfo");
                 jsonParam.put("placename", p_name);
 
                 OutputStream os = conn.getOutputStream();
@@ -190,9 +196,11 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                     responseString =responseString.substring(1, response.length() - 1);
 
                     jsonParam = new JSONObject(responseString);
-                    String p_id = jsonParam.getString("p_id");
+                    returns[0] = jsonParam.getString("p_id");
+                    returns[1] = jsonParam.getString("info");
                     conn.disconnect();
-                    return p_id;
+
+                    return returns;
                 }
                 else {
                     is = conn.getErrorStream();
@@ -209,8 +217,8 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(String[] strings) {
+            super.onPostExecute(strings);
         }
     }
 
