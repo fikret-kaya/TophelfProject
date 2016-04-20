@@ -79,11 +79,9 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         final Button myMinus = (Button) row.findViewById(R.id.minus);
         final Button myPlus = (Button) row.findViewById(R.id.plus);
 
-        if( emails[position].contains("@")){
-            myImage.setProfileId("10209196878817858");
-        } else {
+        if( !emails[position].contains("@") )
             myImage.setProfileId(emails[position]);
-        }
+
 
         if( comments[position] != null ) {
             myComment.setVisibility(View.VISIBLE);

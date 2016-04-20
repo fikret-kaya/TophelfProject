@@ -193,9 +193,12 @@ public class TagForPlace extends AppCompatActivity
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     }
-                    intent = new Intent(getApplicationContext(), FriendActivity.class);
-                    intent.putExtra("friend_id", f_id);
-                    startActivity(intent);
+
+                    if(f_id.equals("-1")) {
+                        intent = new Intent(getApplicationContext(), FriendActivity.class);
+                        intent.putExtra("friend_id", f_id);
+                        startActivity(intent);
+                    }
                 }
 
                 return true;
@@ -224,14 +227,6 @@ public class TagForPlace extends AppCompatActivity
             ProfilePictureView imgvw = (ProfilePictureView)hView.findViewById(R.id.profilePicture);
             imgvw.setProfileId(fbID);
 
-        } else{
-        //ImageView imgvw = (ImageView)hView.findViewById(R.id.profilePicture);
-           /* ProfilePictureView fb = new ProfilePictureView(this);
-            fb.setProfileId(user_id);
-            fb.setPresetSize(ProfilePictureView.SMALL);
-            ImageView fbImage = ( ( ImageView)fb.getChildAt( 0));
-            Bitmap bitmap  = ( ( BitmapDrawable) fbImage.getDrawable()).getBitmap();
-            imgvw.setImageBitmap(bitmap);*/
         }
 
     }
