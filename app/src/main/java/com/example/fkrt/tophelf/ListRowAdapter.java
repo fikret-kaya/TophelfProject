@@ -44,8 +44,10 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     String[] ratings;
     String[] relationTimes;
     String[] emails;
+    String[] relation_ids;
 
-    ListRowAdapter(Context context, int images, String[] names, String[] places, String[] tags, String[] comments, String[] ratings, String[] relationTimes, String[] emails) {
+    ListRowAdapter(Context context, int images, String[] names, String[] places, String[] tags, String[] comments,
+                                        String[] ratings, String[] relationTimes, String[] emails, String[] relation_ids) {
         super(context, R.layout.single_row, R.id.place, places);
         this.context = context;
         this.images = images;
@@ -56,6 +58,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         this.ratings = ratings;
         this.relationTimes = relationTimes;
         this.emails = emails;
+        this.relation_ids = relation_ids;
     }
 
     /*placeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

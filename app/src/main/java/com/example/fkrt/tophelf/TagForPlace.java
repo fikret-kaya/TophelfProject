@@ -70,7 +70,7 @@ public class TagForPlace extends AppCompatActivity
 
     private String p_name, p_id, p_info, p_loc;
 
-    private String[] names, places, tags, commentsList, ratings, relationTimes, emails;
+    private String[] names, places, tags, commentsList, ratings, relationTimes, emails, relation_ids;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     int images = R.drawable.logo64;
@@ -115,6 +115,7 @@ public class TagForPlace extends AppCompatActivity
         ratings = new String[relations.size()];
         relationTimes = new String[relations.size()];
         emails = new String[relations.size()];
+        relation_ids = new String[relations.size()];
 
         double overallRating = 0;
 
@@ -126,6 +127,7 @@ public class TagForPlace extends AppCompatActivity
             ratings[i] = relations.get(i).getRating();
             relationTimes[i] = relations.get(i).getRelationTime();
             emails[i] = relations.get(i).getEmail();
+            relation_ids = new String[relations.size()];
 
             overallRating += Double.parseDouble(ratings[i]);
         }
@@ -169,7 +171,8 @@ public class TagForPlace extends AppCompatActivity
         placeInfoV = (TextView) findViewById(R.id.placeinfoV);
         placeInfoV.setText(p_info);
         commentsV = (ListView) findViewById(R.id.commentsV);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, commentsList, ratings, relationTimes,emails);
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, commentsList,
+                ratings, relationTimes, emails, relation_ids);
         commentsV.setAdapter(listRowAdapter);
         mapV = (ImageView) findViewById(R.id.mapV);
 
@@ -475,7 +478,8 @@ public class TagForPlace extends AppCompatActivity
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
                         relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
-                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"), jsonParam.getString("email")));
+                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"),
+                                jsonParam.getString("email"), jsonParam.getString("r_id")));
                     }
 
                     return relation;

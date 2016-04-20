@@ -58,7 +58,7 @@ public class FriendActivity extends AppCompatActivity {
 
     ArrayList<Relation> relations;
 
-    private String[] names, places, tags, comments, ratings, relationTimes, emails;
+    private String[] names, places, tags, comments, ratings, relationTimes, emails,relation_ids;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     int images = R.drawable.logo64;
@@ -108,6 +108,7 @@ public class FriendActivity extends AppCompatActivity {
         ratings = new String[relations.size()];
         relationTimes = new String[relations.size()];
         emails = new String[relations.size()];
+        relation_ids = new String[relations.size()];
 
         for(int i = 0; i < relations.size(); i++) {
             names[i] = relations.get(i).getUsername();
@@ -117,10 +118,12 @@ public class FriendActivity extends AppCompatActivity {
             ratings[i] = relations.get(i).getRating();
             relationTimes[i] = relations.get(i).getRelationTime();
             emails[i] = relations.get(i).getEmail();
+            relation_ids = new String[relations.size()];
         }
 
         votes = (ListView) findViewById(R.id.votes);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, comments, ratings, relationTimes,emails);
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, comments,
+                ratings, relationTimes, emails, relation_ids);
         votes.setAdapter(listRowAdapter);
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);
@@ -441,7 +444,8 @@ public class FriendActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
                         relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
-                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"), jsonParam.getString("email")));
+                                jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"),
+                                jsonParam.getString("email"), jsonParam.getString("r_id")));
                     }
 
                     return relation;
