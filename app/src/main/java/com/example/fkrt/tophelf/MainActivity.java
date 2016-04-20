@@ -161,9 +161,12 @@ public class MainActivity extends AppCompatActivity
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     }
-                    intent = new Intent(getApplicationContext(), FriendActivity.class);
-                    intent.putExtra("friend_id", f_id);
-                    startActivity(intent);
+
+                    if(f_id.equals("-1")) {
+                        intent = new Intent(getApplicationContext(), FriendActivity.class);
+                        intent.putExtra("friend_id", f_id);
+                        startActivity(intent);
+                    }
                 }
 
                 return true;
@@ -200,8 +203,6 @@ public class MainActivity extends AppCompatActivity
             imgvw.setImageBitmap(bitmap);*/
             imgvw.setProfileId(fbID);
 
-        } else {
-            imgvw.setProfileId("10209196878817858");
         }
 
 
