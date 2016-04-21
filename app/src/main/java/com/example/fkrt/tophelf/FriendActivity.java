@@ -134,8 +134,13 @@ public class FriendActivity extends AppCompatActivity {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        ranksArr = new String[ranks.size()];
-        ranksArr = ranks.toArray(ranksArr);
+        if(ranks.size() == 0) {
+            ranksArr = null;
+
+        } else {
+            ranksArr = new String[ranks.size()];
+            ranksArr = ranks.toArray(ranksArr);
+        }
 
         votes = (ListView) findViewById(R.id.votes);
         ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, comments,
