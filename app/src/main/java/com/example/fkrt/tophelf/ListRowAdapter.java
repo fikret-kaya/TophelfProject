@@ -165,14 +165,14 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         myMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
+                /*try {
                     boolean b = new MakeRankingConn().execute(u_id,relation_ids[position],"-").get();
                     String zirt = "";
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
-                }
+                }*/
                 myMinus.setBackgroundResource(R.drawable.minusf);
                 myPlus.setBackgroundResource(R.drawable.pluse);
             }
@@ -181,13 +181,13 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         myPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
+                /*try {
                     boolean b = new MakeRankingConn().execute(u_id,relation_ids[position],"+").get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
-                }
+                }*/
                 myPlus.setBackgroundResource(R.drawable.plusf);
                 myMinus.setBackgroundResource(R.drawable.minuse);
             }
