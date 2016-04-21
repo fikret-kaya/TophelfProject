@@ -714,7 +714,7 @@ public class FriendActivity extends AppCompatActivity {
                     JSONArray jsonarray = new JSONArray(responseString);
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
-                        ranks.add(jsonParam.getString("r_id"));
+                        ranks.add(jsonParam.getString("relation_id"));
                         ranks.add(jsonParam.getString("rank"));
                     }
 

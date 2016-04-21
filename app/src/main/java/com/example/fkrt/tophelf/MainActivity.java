@@ -124,8 +124,13 @@ public class MainActivity extends AppCompatActivity
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        ranksArr = new String[ranks.size()];
-        ranksArr = ranks.toArray(ranksArr);
+        if(ranks.size() == 0) {
+            ranksArr = null;
+
+        } else {
+            ranksArr = new String[ranks.size()];
+            ranksArr = ranks.toArray(ranksArr);
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -598,7 +603,7 @@ public class MainActivity extends AppCompatActivity
                     JSONArray jsonarray = new JSONArray(responseString);
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
-                        ranks.add(jsonParam.getString("r_id"));
+                        ranks.add(jsonParam.getString("relation_id"));
                         ranks.add(jsonParam.getString("rank"));
                     }
 
