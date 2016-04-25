@@ -4,13 +4,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -19,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 import org.json.JSONArray;
@@ -38,7 +46,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private Intent intent;
 
@@ -54,7 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     ArrayList<Relation> relations;
 
-    private String[] names, places, tags, comments, ratings, relationTimes, emails, relation_ids;
+    private String[] names, ids, places, tags, comments, ratings, relationTimes, emails, relation_ids;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     int images = R.drawable.logo64;
@@ -77,11 +86,22 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         u_id = sharedPref.getString("u_id", "N/A");
         user_name = sharedPref.getString("name", "N/A");
         isFB = sharedPref.getBoolean("isFB", false);
         fbID = sharedPref.getString("fbID", "N/A");
+
+        setTitle("Profile");
 
         try {
             relations = new GetTimelineConn().execute(u_id).get();
@@ -96,6 +116,7 @@ public class ProfileActivity extends AppCompatActivity {
         profileImage = (ProfilePictureView) findViewById(R.id.image);
 
         names = new String[relations.size()];
+        ids = new String[relations.size()];
         places = new String[relations.size()];
         tags = new String[relations.size()];
         comments = new String[relations.size()];
@@ -106,6 +127,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         for(int i = 0; i < relations.size(); i++) {
             names[i] = user_name;
+            ids[i] = relations.get(i).getU_id();
             places[i] = relations.get(i).getP_id();
             tags[i] = relations.get(i).getT_id();
             comments[i] = relations.get(i).getC_id();
@@ -118,7 +140,7 @@ public class ProfileActivity extends AppCompatActivity {
         String[] ranksArr = {"profile_activity"};
 
         votes = (ListView) findViewById(R.id.votes);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, comments,
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, ids, places, tags, comments,
                                                                 ratings, relationTimes, emails, relation_ids, ranksArr);
         votes.setAdapter(listRowAdapter);
 
@@ -167,6 +189,41 @@ public class ProfileActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_profile) {
+            intent = new Intent(this, ProfileActivity.class);
+            this.startActivity(intent);
+        } else if (id == R.id.nav_friends) {
+
+        } else if (id == R.id.nav_votesComments) {
+            intent = new Intent(this, MainActivity.class);
+            this.startActivity(intent);
+
+        } else if (id == R.id.nav_settings) {
+
+        } else if (id == R.id.nav_helpfeedback) {
+
+        } else if (id == R.id.nav_logout) {
+            if (isFB) {
+                LoginManager.getInstance().logOut();
+            } else {
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("isLogin", false);
+                editor.commit();
+            }
+            intent = new Intent(this, LoginActivity.class);
+            this.startActivity(intent);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     //  Server connectıon
@@ -226,16 +283,19 @@ public class ProfileActivity extends AppCompatActivity {
                     JSONArray jsonarray = new JSONArray(responseString);
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
-                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
+                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("u_id"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
                                     jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"),
                                                                         jsonParam.getString("email"), jsonParam.getString("r_id")));
                     }
+
+                    conn.disconnect();
 
                     return relation;
                 }
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -324,6 +384,7 @@ public class ProfileActivity extends AppCompatActivity {
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -408,6 +469,7 @@ public class ProfileActivity extends AppCompatActivity {
                 } else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

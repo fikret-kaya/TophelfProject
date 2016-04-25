@@ -62,6 +62,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        setTitle("Registeration");
+
         name = (EditText) findViewById(R.id.name);
         surname = (EditText) findViewById(R.id.surname);
         phone = (EditText) findViewById(R.id.phonenumber);
@@ -252,11 +254,15 @@ public class RegisterActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
+
+                    conn.disconnect();
+
                     return true;
                 }
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
