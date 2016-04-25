@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     ArrayList<String> friendsIDs, ranks;
     ArrayList<Relation> relations;
 
-    private String[] names, places, tags, comments, ratings, relationTimes, emails, relation_ids;
+    private String[] names, ids, places, tags, comments, ratings, relationTimes, emails, relation_ids;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     int images = R.drawable.logo64;
@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity
         fbID = sharedPref.getString("fbID", "N/A");
         u_id = sharedPref.getString("u_id", "N/A");
 
+        setTitle("Timeline");
+
         ArrayList<Relation> tempRelations;
         try {
             friendsIDs = new GetFriendsConn().execute(u_id).get();
@@ -97,6 +99,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         names = new String[relations.size()];
+        ids = new String[relations.size()];
         places = new String[relations.size()];
         tags = new String[relations.size()];
         comments = new String[relations.size()];
@@ -105,8 +108,11 @@ public class MainActivity extends AppCompatActivity
         emails = new String[relations.size()];
         relation_ids = new String[relations.size()];
 
+        String prev = "";
+        int j = friendsIDs.size();
         for(int i = 0; i < relations.size(); i++) {
             names[i] = relations.get(i).getUsername();
+            ids[i] = relations.get(i).getU_id();
             places[i] = relations.get(i).getP_id();
             tags[i] = relations.get(i).getT_id();
             comments[i] = relations.get(i).getC_id();
@@ -156,7 +162,7 @@ public class MainActivity extends AppCompatActivity
 
 
         placeList = (ListView) findViewById(R.id.placelist);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, comments,
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, ids, places, tags, comments,
                 ratings, relationTimes, emails, relation_ids, ranksArr);
         placeList.setAdapter(listRowAdapter);
 
@@ -250,11 +256,6 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -353,6 +354,7 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -435,6 +437,7 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -510,16 +513,19 @@ public class MainActivity extends AppCompatActivity
                     JSONArray jsonarray = new JSONArray(responseString);
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
-                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
+                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("u_id"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
                                 jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"),
                                 jsonParam.getString("email"), jsonParam.getString("r_id")));
                     }
+
+                    conn.disconnect();
 
                     return relation;
                 }
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -607,11 +613,14 @@ public class MainActivity extends AppCompatActivity
                         ranks.add(jsonParam.getString("rank"));
                     }
 
+                    conn.disconnect();
+
                     return ranks;
                 }
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

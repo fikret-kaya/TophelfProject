@@ -15,17 +15,23 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.playlog.internal.LogEvent;
 
 import org.json.JSONException;
@@ -44,7 +50,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
-public class VoteActivity extends AppCompatActivity implements LocationListener {
+public class VoteActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener {
 
     private Intent intent;
     private double latitude, longitude;
@@ -65,10 +71,21 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         isFB = sharedPref.getBoolean("isFB", false);
         fbID = sharedPref.getString("fbID", "N/A");
         u_id = sharedPref.getString("u_id", "N/A");
+
+        setTitle("Vote");
 
         place = (EditText) findViewById(R.id.placeInfo);
         tag = (EditText) findViewById(R.id.tagInfo);
@@ -109,6 +126,14 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
         //startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     public void vote() {
         progress = ProgressDialog.show(this, "Please wait !",
                 "Updating...", true);
@@ -142,6 +167,41 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_profile) {
+            intent = new Intent(this, ProfileActivity.class);
+            this.startActivity(intent);
+        } else if (id == R.id.nav_friends) {
+
+        } else if (id == R.id.nav_votesComments) {
+            intent = new Intent(this, MainActivity.class);
+            this.startActivity(intent);
+
+        } else if (id == R.id.nav_settings) {
+
+        } else if (id == R.id.nav_helpfeedback) {
+
+        } else if (id == R.id.nav_logout) {
+            if (isFB) {
+                LoginManager.getInstance().logOut();
+            } else {
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("isLogin", false);
+                editor.commit();
+            }
+            intent = new Intent(this, LoginActivity.class);
+            this.startActivity(intent);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     class Voteconn extends AsyncTask<Object, Void, Boolean>
@@ -326,11 +386,15 @@ public class VoteActivity extends AppCompatActivity implements LocationListener 
 
                                 intent = new Intent(getApplicationContext(), MainActivity.class);
                                 startActivity(intent);
+
+                                conn4.disconnect();
+
                                 return true;
 
                             } else {
                                 is = conn4.getErrorStream();
                             }
+                            conn4.disconnect();
 
                         } else {
                             is = conn3.getErrorStream();

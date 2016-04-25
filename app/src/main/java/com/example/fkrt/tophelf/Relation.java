@@ -7,10 +7,11 @@ import java.security.Timestamp;
  */
 public class Relation {
 
-    private String username, p_id, t_id, c_id, rating, relationTime, email, r_id;
+    private String username, u_id, p_id, t_id, c_id, rating, relationTime, email, r_id;
 
     public Relation() {
         username = "";
+        u_id = "";
         p_id = "";
         t_id  = "";
         c_id  = "";
@@ -20,9 +21,10 @@ public class Relation {
         r_id = "";
     }
 
-    public Relation(String username, String p_id, String t_id, String c_id, String rating,
+    public Relation(String username, String u_id, String p_id, String t_id, String c_id, String rating,
                                                     String relationTime, String email, String r_id) {
         this.username = username;
+        this.u_id = u_id;
         this.p_id = p_id;
         this.t_id  = t_id;
         this.c_id  = c_id;
@@ -56,6 +58,10 @@ public class Relation {
         return username;
     }
 
+    public String getU_id() {
+        return u_id;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -86,6 +92,10 @@ public class Relation {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setU_id(String u_id) {
+        this.u_id = u_id;
     }
 
     public void setEmail(String email) {

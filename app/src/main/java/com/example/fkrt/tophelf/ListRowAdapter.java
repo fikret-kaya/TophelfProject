@@ -41,6 +41,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     Context context;
     int images;
     String[] names;
+    String[] ids;
     String[] places;
     String[] tags;
     String[] comments;
@@ -50,12 +51,13 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     String[] relation_ids;
     String[] ranks;
 
-    ListRowAdapter(Context context, int images, String[] names, String[] places, String[] tags, String[] comments,
+    ListRowAdapter(Context context, int images, String[] names, String[] ids, String[] places, String[] tags, String[] comments,
                                         String[] ratings, String[] relationTimes, String[] emails, String[] relation_ids, String[] ranks) {
         super(context, R.layout.single_row, R.id.place, places);
         this.context = context;
         this.images = images;
         this.names = names;
+        this.ids = ids;
         this.places = places;
         this.tags = tags;
         this.comments = comments;
@@ -126,6 +128,31 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+            }
+        });
+
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        final String u_id = sharedPref.getString("u_id", "N/A");
+
+        myName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(u_id != ids[position]) {
+                    intent = new Intent(context, FriendActivity.class);
+                    intent.putExtra("friend_id", ids[position]);
+                } else {
+                    intent = new Intent(context, ProfileActivity.class);
+                }
+                context.startActivity(intent);
+
+            }
+        });
+
+        myPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 String nn = names[position];
                 String pp = places[position];
                 String tt = tags[position];
@@ -158,9 +185,6 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 }
             }
         });
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        final String u_id = sharedPref.getString("u_id", "N/A");
 
         myMinus.setOnClickListener(new View.OnClickListener() {
             @Override
