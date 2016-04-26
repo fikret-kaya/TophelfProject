@@ -117,13 +117,13 @@ public class VoteActivity extends AppCompatActivity implements LocationListener,
 
     // vote
     public void onClick(View v) throws ExecutionException, InterruptedException {
-        Toast.makeText(getApplicationContext(), "Thanks Your For Your Contribution", Toast.LENGTH_LONG).show();
 
-        vote();
-        //boolean b = new Voteconn().execute(u_id,latitude+ "",longitude+"",place.getText().toString(),tag.getText().toString(),comment.getText().toString(), placeRate).get();
-
-       // intent = new Intent(this, MainActivity.class);
-        //startActivity(intent);
+        if(place.getText() == null || tag.getText() == null || placeRate == null) {
+            Toast.makeText(getApplicationContext(), "Please fill all boxes!", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Thanks Your For Your Contribution", Toast.LENGTH_LONG).show();
+            vote();
+        }
     }
 
     @Override
