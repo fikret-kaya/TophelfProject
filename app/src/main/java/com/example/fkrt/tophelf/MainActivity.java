@@ -270,7 +270,8 @@ public class MainActivity extends AppCompatActivity
             intent = new Intent(this, ProfileActivity.class);
             this.startActivity(intent);
         } else if (id == R.id.nav_friends) {
-
+            intent = new Intent(this, FriendsListActivity.class);
+            this.startActivity(intent);
         } else if (id == R.id.nav_votesComments) {
             intent = new Intent(this, MainActivity.class);
             this.startActivity(intent);
