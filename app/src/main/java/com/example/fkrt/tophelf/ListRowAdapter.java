@@ -28,7 +28,11 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -86,6 +90,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         TextView myTag = (TextView) row.findViewById(R.id.tag);
         TextView myComment = (TextView) row.findViewById(R.id.comment);
         TextView myRating = (TextView) row.findViewById(R.id.rating);
+        TextView myTime = (TextView) row.findViewById(R.id.time);
         final Button myMinus = (Button) row.findViewById(R.id.minus);
         final Button myPlus = (Button) row.findViewById(R.id.plus);
 
@@ -120,10 +125,54 @@ public class ListRowAdapter extends ArrayAdapter<String> {
             }
         }
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDateandTime = sdf.format(new Date());
+
+        String[] times = currentDateandTime.split("- :");
+
+        String aaa = currentDateandTime.substring(0, 4);
+        String bbb = relationTimes[position].substring(0, 4);
+
+        aaa = currentDateandTime.substring(5,7);
+        bbb = currentDateandTime.substring(5,7);
+
+        aaa = currentDateandTime.substring(8,9);
+        bbb = currentDateandTime.substring(8,9);
+
+        aaa = currentDateandTime.substring(11,12);
+        bbb = currentDateandTime.substring(11,12);
+
+        if(currentDateandTime.substring(0,4).equals(relationTimes[position].substring(0,4))) {
+            if(currentDateandTime.substring(5,7).equals(currentDateandTime.substring(5,7))) {
+                if(currentDateandTime.substring(8,10).equals(relationTimes[position].substring(8,10))) {
+                    if(currentDateandTime.substring(11,13).equals(relationTimes[position].substring(11,13))) {
+                        if(currentDateandTime.substring(14,16).equals(relationTimes[position].substring(14,16))) {
+                            if(currentDateandTime.substring(17,19).equals(relationTimes[position].substring(17,19))) {
+                                myTime.setText("0s");
+                            } else {
+                                myTime.setText(Integer.parseInt(currentDateandTime.substring(17,19))-Integer.parseInt(relationTimes[position].substring(17,19))+"s");
+                            }
+                        } else {
+                            myTime.setText(Integer.parseInt(currentDateandTime.substring(14,16))-Integer.parseInt(relationTimes[position].substring(14, 16))+"m");
+                        }
+                    } else {
+                        myTime.setText(Integer.parseInt(currentDateandTime.substring(11,13))-Integer.parseInt(relationTimes[position].substring(11, 13))+"h");
+                    }
+                } else {
+                    myTime.setText(Integer.parseInt(currentDateandTime.substring(8,10))-Integer.parseInt(relationTimes[position].substring(8, 10))+"d");
+                }
+            } else {
+                myTime.setText(Integer.parseInt(currentDateandTime.substring(5,7))-Integer.parseInt(relationTimes[position].substring(5, 7))+"mo");
+            }
+
+        } else {
+            myTime.setText(Integer.parseInt(currentDateandTime.substring(0,4))-Integer.parseInt(relationTimes[position].substring(0, 4))+"y");
+        }
+
         myName.setText(names[position]);
         myPlace.setText(places[position]);
         myTag.setText(tags[position]);
-        myRating.setText(ratings[position]);
+        myRating.setText(ratings[position] + " for ");
 
         row.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,14 +248,14 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         myMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*try {
+                try {
                     boolean b = new MakeRankingConn().execute(u_id,relation_ids[position],"-").get();
                     String zirt = "";
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
-                }*/
+                }
                 myMinus.setBackgroundResource(R.drawable.minusf);
                 myPlus.setBackgroundResource(R.drawable.pluse);
             }
@@ -215,13 +264,13 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         myPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*try {
+                try {
                     boolean b = new MakeRankingConn().execute(u_id,relation_ids[position],"+").get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
-                }*/
+                }
                 myPlus.setBackgroundResource(R.drawable.plusf);
                 myMinus.setBackgroundResource(R.drawable.minuse);
             }
