@@ -67,7 +67,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Place X"
                 android:id="@+id/place"
-                android:textColor="#2D96C4"
+                android:textColor="#000000"
                 android:textSize="24dp"
                 android:gravity="center"
                 android:layout_alignTop="@+id/image"

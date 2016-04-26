@@ -186,6 +186,16 @@ public class ListRowAdapter extends ArrayAdapter<String> {
             }
         });
 
+        myTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String tt = tags[position];
+                intent = new Intent(context, PlaceForTag.class);
+                intent.putExtra("tag", tt);
+                context.startActivity(intent);
+            }
+        });
+
         myMinus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

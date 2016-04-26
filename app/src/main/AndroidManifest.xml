@@ -79,6 +79,10 @@
         <activity
             android:name=".FriendActivity"
             android:label="@string/title_activity_friend"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".PlaceForTag"
+            android:label="@string/title_activity_place_for_tag"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

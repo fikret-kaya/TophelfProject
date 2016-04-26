@@ -65,7 +65,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Name Surname Zzz"
                 android:id="@+id/name"
-                android:textColor="#2D96C4"
+                android:textColor="#000000"
                 android:textSize="26dp"
                 android:gravity="center"
                 android:layout_alignTop="@+id/image"
