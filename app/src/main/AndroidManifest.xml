@@ -38,7 +38,7 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".TagForPlace"
+            android:name=".TagForPlaceActivity"
             android:label="@string/title_activity_tag_for_place"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -81,8 +81,12 @@
             android:label="@string/title_activity_friend"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".PlaceForTag"
+            android:name=".PlaceForTagActivity"
             android:label="@string/title_activity_place_for_tag"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".FriendsListActivity"
+            android:label="@string/title_activity_friends_list"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

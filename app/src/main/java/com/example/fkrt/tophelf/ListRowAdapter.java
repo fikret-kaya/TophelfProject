@@ -173,7 +173,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 p_loc = placeIDinfoArray[2];
 
                 if(p_id != null) {
-                    intent = new Intent(context, TagForPlace.class);
+                    intent = new Intent(context, TagForPlaceActivity.class);
                     intent.putExtra("name", nn);
                     intent.putExtra("place", pp);
                     intent.putExtra("placeID", p_id);
@@ -190,7 +190,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
             @Override
             public void onClick(View v) {
                 String tt = tags[position];
-                intent = new Intent(context, PlaceForTag.class);
+                intent = new Intent(context, PlaceForTagActivity.class);
                 intent.putExtra("tag", tt);
                 context.startActivity(intent);
             }
