@@ -10,10 +10,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 import org.json.JSONArray;
@@ -42,7 +48,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-public class FriendActivity extends AppCompatActivity {
+public class FriendActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private Intent intent;
     private Bundle bundle;
@@ -59,7 +66,7 @@ public class FriendActivity extends AppCompatActivity {
     ArrayList<String> ranks;
     ArrayList<Relation> relations;
 
-    private String[] names, places, tags, comments, ratings, relationTimes, emails,relation_ids;
+    private String[] names, ids, places, tags, comments, ratings, relationTimes, emails,relation_ids;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     int images = R.drawable.logo64;
@@ -82,6 +89,17 @@ public class FriendActivity extends AppCompatActivity {
             }
         });
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        setTitle("");
+
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         isFB = sharedPref.getBoolean("isFB", false);
         user_id = sharedPref.getString("u_id", "N/A");
@@ -90,9 +108,11 @@ public class FriendActivity extends AppCompatActivity {
         friend_id = bundle.getString("friend_id");
 
         boolean b = false;
+        String fname = "";
         try {
             b = new IsFriendConn().execute(friend_id,user_id).get();
-            b = new GetFriendConn().execute(friend_id).get();
+            fname = new GetFriendConn().execute(friend_id).get();
+            setTitle(fname);
             relations = new GetTimelineConn().execute(friend_id).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -103,6 +123,7 @@ public class FriendActivity extends AppCompatActivity {
         inner0 = (RelativeLayout) findViewById(R.id.inner0);
 
         names = new String[relations.size()];
+        ids = new String[relations.size()];
         places = new String[relations.size()];
         tags = new String[relations.size()];
         comments = new String[relations.size()];
@@ -113,6 +134,7 @@ public class FriendActivity extends AppCompatActivity {
 
         for(int i = 0; i < relations.size(); i++) {
             names[i] = relations.get(i).getUsername();
+            ids[i] = relations.get(i).getU_id();
             places[i] = relations.get(i).getP_id();
             tags[i] = relations.get(i).getT_id();
             comments[i] = relations.get(i).getC_id();
@@ -143,7 +165,7 @@ public class FriendActivity extends AppCompatActivity {
         }
 
         votes = (ListView) findViewById(R.id.votes);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, comments,
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, ids, places, tags, comments,
                 ratings, relationTimes, emails, relation_ids, ranksArr);
         votes.setAdapter(listRowAdapter);
 
@@ -211,6 +233,41 @@ public class FriendActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_profile) {
+            intent = new Intent(this, ProfileActivity.class);
+            this.startActivity(intent);
+        } else if (id == R.id.nav_friends) {
+
+        } else if (id == R.id.nav_votesComments) {
+            intent = new Intent(this, MainActivity.class);
+            this.startActivity(intent);
+
+        } else if (id == R.id.nav_settings) {
+
+        } else if (id == R.id.nav_helpfeedback) {
+
+        } else if (id == R.id.nav_logout) {
+            if (isFB) {
+                LoginManager.getInstance().logOut();
+            } else {
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("isLogin", false);
+                editor.commit();
+            }
+            intent = new Intent(this, LoginActivity.class);
+            this.startActivity(intent);
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
     //  Server connectıon
     class IsFriendConn extends AsyncTask<String, Void, Boolean>
     {
@@ -271,6 +328,7 @@ public class FriendActivity extends AppCompatActivity {
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -279,6 +337,7 @@ public class FriendActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
             return false;
         }
 
@@ -297,7 +356,7 @@ public class FriendActivity extends AppCompatActivity {
     }
 
     //  Server connectıon
-    class GetFriendConn extends AsyncTask<String, Void, Boolean>
+    class GetFriendConn extends AsyncTask<String, Void, String>
     {
         private ProfilePictureView image;
         private TextView name;
@@ -312,7 +371,7 @@ public class FriendActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected String doInBackground(String... params) {
             String friend_id = params[0];
 
             try {
@@ -376,11 +435,12 @@ public class FriendActivity extends AppCompatActivity {
                         }
                     }
                     //decodedImage = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    return true;
+                    return username;
                 }
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -389,12 +449,14 @@ public class FriendActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return false;
+            return null;
         }
 
+
+
         @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
+        protected void onPostExecute(String str) {
+            super.onPostExecute(str);
 
             image = (ProfilePictureView) findViewById(R.id.image);
             if(!email.contains("@"))
@@ -464,7 +526,7 @@ public class FriendActivity extends AppCompatActivity {
                     JSONArray jsonarray = new JSONArray(responseString);
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
-                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
+                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("u_id"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
                                 jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"),
                                 jsonParam.getString("email"), jsonParam.getString("r_id")));
                     }
@@ -474,6 +536,7 @@ public class FriendActivity extends AppCompatActivity {
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -561,6 +624,7 @@ public class FriendActivity extends AppCompatActivity {
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -636,6 +700,7 @@ public class FriendActivity extends AppCompatActivity {
                 } else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -728,6 +793,7 @@ public class FriendActivity extends AppCompatActivity {
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
