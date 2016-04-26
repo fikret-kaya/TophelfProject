@@ -73,7 +73,7 @@ public class TagForPlace extends AppCompatActivity
 
     private String p_name, p_id, p_info, p_loc;
 
-    private String[] names, places, tags, commentsList, ratings, relationTimes, emails, relation_ids;
+    private String[] names, ids, places, tags, commentsList, ratings, relationTimes, emails, relation_ids;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     int images = R.drawable.logo64;
@@ -101,7 +101,7 @@ public class TagForPlace extends AppCompatActivity
         p_loc = bundle.getString("placeLoc");
         String tt = bundle.getString("tag");
         String rr = bundle.getString("rating");
-        setTitle(nn);
+        setTitle(p_name);
 
         try {
             relations = new GetTimelineConn().execute(p_id).get();
@@ -112,6 +112,7 @@ public class TagForPlace extends AppCompatActivity
         }
 
         names = new String[relations.size()];
+        ids = new String[relations.size()];
         places = new String[relations.size()];
         tags = new String[relations.size()];
         commentsList = new String[relations.size()];
@@ -124,6 +125,7 @@ public class TagForPlace extends AppCompatActivity
 
         for(int i = 0; i < relations.size(); i++) {
             names[i] = relations.get(i).getUsername();
+            ids[i] = relations.get(i).getU_id();
             places[i] = relations.get(i).getP_id();
             tags[i] = relations.get(i).getT_id();
             commentsList[i] = relations.get(i).getC_id();
@@ -193,7 +195,7 @@ public class TagForPlace extends AppCompatActivity
         placeInfoV = (TextView) findViewById(R.id.placeinfoV);
         placeInfoV.setText(p_info);
         commentsV = (ListView) findViewById(R.id.commentsV);
-        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, places, tags, commentsList,
+        ListRowAdapter listRowAdapter = new ListRowAdapter(this, images, names, ids, places, tags, commentsList,
                 ratings, relationTimes, emails, relation_ids, ranksArr);
         commentsV.setAdapter(listRowAdapter);
         mapV = (ImageView) findViewById(R.id.mapV);
@@ -327,11 +329,6 @@ public class TagForPlace extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -429,6 +426,7 @@ public class TagForPlace extends AppCompatActivity
                 } else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -503,16 +501,19 @@ public class TagForPlace extends AppCompatActivity
                     JSONArray jsonarray = new JSONArray(responseString);
                     for (int i = 0; i < jsonarray.length(); i++) {
                         jsonParam = jsonarray.getJSONObject(i);
-                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
+                        relation.add(new Relation(jsonParam.getString("username"), jsonParam.getString("u_id"), jsonParam.getString("placename"), jsonParam.getString("tagname"),
                                 jsonParam.getString("content"), jsonParam.getString("rating"), jsonParam.getString("relationtime"),
                                 jsonParam.getString("email"), jsonParam.getString("r_id")));
                     }
+
+                    conn.disconnect();
 
                     return relation;
                 }
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -600,11 +601,14 @@ public class TagForPlace extends AppCompatActivity
                         ranks.add(jsonParam.getString("rank"));
                     }
 
+                    conn.disconnect();
+
                     return ranks;
                 }
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

@@ -109,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
         if(isLogin){
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
+            finish();
         }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -397,11 +398,16 @@ public class LoginActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
+                    finish();
+
+                    conn.disconnect();
+
                     return true;
                 }
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -454,7 +460,6 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             Bitmap image = BitmapFactory.decodeStream(input);
-
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             image.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
@@ -513,11 +518,16 @@ public class LoginActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
+                    finish();
+
+                    conn.disconnect();
+
                     return true;
                 }
                 else {
                     is = conn.getErrorStream();
                 }
+                conn.disconnect();
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -526,7 +536,6 @@ public class LoginActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
             return false;
         }
 
