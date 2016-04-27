@@ -2,6 +2,8 @@ package com.example.fkrt.tophelf;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +19,11 @@ import com.facebook.login.widget.ProfilePictureView;
 public class ListFriendRowAdapter extends ArrayAdapter<String> {
 
     Intent intent;
+    SharedPreferences sharedPref;
 
     Context context;
 
+    String u_id;
     String[] names;
     String[] ids;
     String[] emails;
@@ -31,6 +35,9 @@ public class ListFriendRowAdapter extends ArrayAdapter<String> {
         this.names = names;
         this.ids = ids;
         this.emails = emails;
+
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        u_id = sharedPref.getString("u_id", "N/A");
 
     }
 
@@ -51,9 +58,16 @@ public class ListFriendRowAdapter extends ArrayAdapter<String> {
         row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent = new Intent(context, FriendActivity.class);
-                intent.putExtra("friend_id", ids[position]);
+                String f_id = ids[position];
+                if (!f_id.equals(u_id)) {
+                    intent = new Intent(context, FriendActivity.class);
+                    intent.putExtra("friend_id", f_id);
+                } else {
+                    intent = new Intent(context, ProfileActivity.class);
+                }
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
+
             }
         });
 

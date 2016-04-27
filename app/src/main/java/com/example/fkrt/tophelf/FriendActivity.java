@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
@@ -62,16 +64,18 @@ public class FriendActivity extends AppCompatActivity
     private SearchView searchView;
     private TextView friendsCount;
     private ListView votes;
-    private ListView searchList;
+    private ListView userSearchList;
 
     ArrayList<String> ranks, friendsIDs;
     ArrayList<Relation> relations;
+    ArrayList<Friend> friends;
 
     private String[] names, ids, places, tags, comments, ratings, relationTimes, emails,relation_ids;
 
     String[] temp = {"#ankara", "#antalya", "#adana", "#bursa", "#istanbul", "#izmir", "#mersin", "#malatya", "#rize", "#erzurum"};
     int images = R.drawable.logo64;
 
+    private ListFriendRowAdapter listFriendRowAdapter;
     ArrayAdapter<String> arrayAdapter;
 
     @Override
@@ -176,48 +180,52 @@ public class FriendActivity extends AppCompatActivity
         votes.setAdapter(listRowAdapter);
 
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);
-        searchList = (ListView) findViewById(R.id.searchlist);
+        userSearchList = (ListView) findViewById(R.id.searchlist);
         searchView = (SearchView) findViewById(R.id.searchbox);
-        searchList.setAdapter(arrayAdapter);
+        userSearchList.setAdapter(arrayAdapter);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchList.setVisibility(View.INVISIBLE);
-                inner0.setVisibility(View.VISIBLE);
 
-                if (query.charAt(0) == '@') {
-                    String f_id = null;
-                    try {
-                        f_id = new GetFriendIdConn().execute(query.substring(1)).get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
-
-                    if(!f_id.equals("-1")) {
-                        intent = new Intent(getApplicationContext(), FriendActivity.class);
-                        intent.putExtra("friend_id", f_id);
-                        startActivity(intent);
-                    }
-                }
-
-                return true;
+                Toast.makeText(getApplicationContext(), "No one found!", Toast.LENGTH_LONG).show();
+                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                if (newText != null) {
-                    searchList.setVisibility(View.VISIBLE);
+                if (!newText.equals("")) {
                     inner0.setVisibility(View.INVISIBLE);
+                    userSearchList.setVisibility(View.VISIBLE);
+
+                    if (newText.charAt(0) == '@') {
+                        String f_id = null;
+                        try {
+                            friends = new GetUsersSearchedConn().execute(newText.substring(1)).get();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                        String[] unames = new String[friends.size()];
+                        final String[] uids = new String[friends.size()];
+                        String[] umails = new String[friends.size()];
+                        for(int i = 0; i < friends.size(); i++) {
+                            unames[i] = friends.get(i).getName();
+                            uids[i] = friends.get(i).getId();
+                            umails[i] = friends.get(i).getEmail();
+                        }
+                        listFriendRowAdapter = new ListFriendRowAdapter(getBaseContext(), unames, uids, umails);
+                        userSearchList.setAdapter(listFriendRowAdapter);
+
+                    }
                 } else {
-                    searchList.setVisibility(View.INVISIBLE);
+                    userSearchList.setVisibility(View.INVISIBLE);
                     inner0.setVisibility(View.VISIBLE);
                 }
-                arrayAdapter.getFilter().filter(newText);
-                return false;
+                return true;
             }
         });
 
@@ -654,6 +662,91 @@ public class FriendActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+        }
+    }
+
+    //  Server connectıon
+    class GetUsersSearchedConn extends AsyncTask<String, Void, ArrayList<Friend>>
+    {
+        ArrayList<Friend> users = new ArrayList<Friend>();
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<Friend> doInBackground(String... params) {
+            String name = params[0];
+
+            try {
+                URL url = new URL("http://"+getResources().getString(R.string.ip)+":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "GetUsersSearched");
+                jsonParam.put("username", name);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+                InputStream is = null;
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    //responseString =responseString.substring(1, response.length() - 1);
+
+                    JSONArray jsonarray = new JSONArray(responseString);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        jsonParam = jsonarray.getJSONObject(i);
+                        users.add(new Friend(jsonParam.getString("username"), jsonParam.getString("u_id"), jsonParam.getString("email")));
+                    }
+
+                    conn.disconnect();
+
+                    return users;
+                }
+                else {
+                    is = conn.getErrorStream();
+                }
+                conn.disconnect();
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return users;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Friend> friends) {
+            super.onPostExecute(friends);
         }
     }
 
