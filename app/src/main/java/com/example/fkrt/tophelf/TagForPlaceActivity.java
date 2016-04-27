@@ -65,7 +65,7 @@ public class TagForPlaceActivity extends AppCompatActivity
     private SearchView searchView;
     private TextView place, rating, placeInfoV;
     private Button placeInfo, comments, map;
-    private ListView commentsV, userSearchList, votes;
+    private ListView commentsV, userSearchList, placeTagSearchList, votes;
     private ImageView mapV;
     SharedPreferences sharedPref;
 
@@ -73,6 +73,7 @@ public class TagForPlaceActivity extends AppCompatActivity
 
     ArrayList<Relation> relations;
     ArrayList<Friend> friends;
+    ArrayList<Place> placesSearched;
 
     private String p_name, p_id, p_info, p_loc;
 
@@ -98,13 +99,10 @@ public class TagForPlaceActivity extends AppCompatActivity
         fbID = sharedPref.getString("fbID","N/A");
 
         bundle = getIntent().getExtras();
-        String nn = bundle.getString("name");
         p_name = bundle.getString("place");
         p_id = bundle.getString("placeID");
         p_info = bundle.getString("placeInfo");
         p_loc = bundle.getString("placeLoc");
-        String tt = bundle.getString("tag");
-        String rr = bundle.getString("rating");
         setTitle(p_name);
 
         try {
@@ -204,10 +202,11 @@ public class TagForPlaceActivity extends AppCompatActivity
         commentsV.setAdapter(listRowAdapter);
         mapV = (ImageView) findViewById(R.id.mapV);
 
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);
+        //arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, temp);
+        placeTagSearchList = (ListView) findViewById(R.id.searchlist2);
         userSearchList = (ListView) findViewById(R.id.searchlist);
         searchView = (SearchView) findViewById(R.id.searchbox);
-        userSearchList.setAdapter(arrayAdapter);
+        //userSearchList.setAdapter(arrayAdapter);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -223,9 +222,11 @@ public class TagForPlaceActivity extends AppCompatActivity
 
                 if (!newText.equals("")) {
                     inner0.setVisibility(View.INVISIBLE);
-                    userSearchList.setVisibility(View.VISIBLE);
+                    userSearchList.setVisibility(View.INVISIBLE);
+                    placeTagSearchList.setVisibility(View.INVISIBLE);
 
-                    if (newText.charAt(0) == '@') {
+                    if (newText.charAt(0) == '@') { // Search User
+                        userSearchList.setVisibility(View.VISIBLE);
                         String f_id = null;
                         try {
                             friends = new GetUsersSearchedConn().execute(newText.substring(1)).get();
@@ -244,10 +245,39 @@ public class TagForPlaceActivity extends AppCompatActivity
                         }
                         listFriendRowAdapter = new ListFriendRowAdapter(getBaseContext(), unames, uids, umails);
                         userSearchList.setAdapter(listFriendRowAdapter);
+
+                    } else if (newText.charAt(0) == '$') { // Search Place
+                        placeTagSearchList.setVisibility(View.VISIBLE);
+                        try {
+                            placesSearched = new GetPlacesSearchedConn().execute(newText.substring(1)).get();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                        String[] placenames = new String[placesSearched.size()];
+                        for(int i = 0; i < placesSearched.size(); i++) {
+                            placenames[i] = placesSearched.get(i).getName();
+                        }
+                        arrayAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1,placenames);
+                        placeTagSearchList.setAdapter(arrayAdapter);
+
+                        placeTagSearchList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                intent = new Intent(getBaseContext(), TagForPlaceActivity.class);
+                                intent.putExtra("place", placesSearched.get(position).getName());
+                                intent.putExtra("placeID", placesSearched.get(position).getId());
+                                intent.putExtra("placeInfo", placesSearched.get(position).getInfo());
+                                intent.putExtra("placeLoc", placesSearched.get(position).getLoc());
+                                startActivity(intent);
+                            }
+                        });
                     }
                 } else {
                     userSearchList.setVisibility(View.INVISIBLE);
                     inner0.setVisibility(View.VISIBLE);
+                    placeTagSearchList.setVisibility(View.INVISIBLE);
                 }
                 return true;
             }
@@ -457,6 +487,89 @@ public class TagForPlaceActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(ArrayList<Friend> friends) {
             super.onPostExecute(friends);
+        }
+    }
+
+    //  Server connectıon
+    class GetPlacesSearchedConn extends AsyncTask<String, Void, ArrayList<Place>> {
+
+        ArrayList<Place> places = new ArrayList<Place>();
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected ArrayList<Place> doInBackground(String... params) {
+            String placename = params[0];
+
+            try {
+                URL url = new URL("http://" + getResources().getString(R.string.ip) + ":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "GetPlacesSearched");
+                jsonParam.put("placename", placename);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+                InputStream is = null;
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while ((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    //responseString = responseString.substring(1, response.length() - 1);
+
+                    JSONArray jsonarray = new JSONArray(responseString);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        jsonParam = jsonarray.getJSONObject(i);
+                        places.add(new Place(jsonParam.getString("placename"), jsonParam.getString("p_id"),
+                                jsonParam.getString("info"), jsonParam.getString("location")));
+                    }
+
+                } else {
+                    is = conn.getErrorStream();
+                }
+                conn.disconnect();
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return places;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Place> places) {
+            super.onPostExecute(places);
         }
     }
 

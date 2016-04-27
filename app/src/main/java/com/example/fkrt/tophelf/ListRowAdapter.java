@@ -223,13 +223,10 @@ public class ListRowAdapter extends ArrayAdapter<String> {
 
                 if(p_id != null) {
                     intent = new Intent(context, TagForPlaceActivity.class);
-                    intent.putExtra("name", nn);
                     intent.putExtra("place", pp);
                     intent.putExtra("placeID", p_id);
                     intent.putExtra("placeInfo", p_info);
                     intent.putExtra("placeLoc", p_loc);
-                    intent.putExtra("tag", tt);
-                    intent.putExtra("rating", rr);
                     context.startActivity(intent);
                 }
             }
