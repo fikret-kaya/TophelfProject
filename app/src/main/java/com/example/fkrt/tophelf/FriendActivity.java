@@ -274,9 +274,11 @@ public class FriendActivity extends AppCompatActivity
         if(friendship.getText().equals("+ Follow")) {
             addRemove = "1";
             friendship.setText("Following");
+            friendship.setBackgroundResource(R.drawable.button_style3);
         } else {
             addRemove = "0";
             friendship.setText("+ Follow");
+            friendship.setBackgroundResource(R.drawable.button_style2);
         }
         boolean b = new AddRemoveFriendConn().execute(friend_id, user_id, addRemove).get();
 
@@ -310,6 +312,7 @@ public class FriendActivity extends AppCompatActivity
             }
             intent = new Intent(this, LoginActivity.class);
             this.startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -398,8 +401,10 @@ public class FriendActivity extends AppCompatActivity
 
             if(responseString.equals("0")) {
                 friendship.setText("+ Follow");
+                friendship.setBackgroundResource(R.drawable.button_style2);
             } else if(responseString.equals("1")) {
                 friendship.setText("Following");
+                friendship.setBackgroundResource(R.drawable.button_style3);
             }
         }
     }

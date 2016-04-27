@@ -197,6 +197,7 @@ public class VoteActivity extends AppCompatActivity implements LocationListener,
             }
             intent = new Intent(this, LoginActivity.class);
             this.startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

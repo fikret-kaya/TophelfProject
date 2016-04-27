@@ -75,7 +75,7 @@
 
             <Button
                 android:id="@+id/selectImage"
-                android:text="   SELECT AN PROFILE IMAGE   "
+                android:text="   SELECT A PROFILE IMAGE   "
                 android:textColor="#2D96C4"
                 android:onClick="onClick"
                 android:layout_gravity="center"
