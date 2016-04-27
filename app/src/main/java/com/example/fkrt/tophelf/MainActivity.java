@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
 
-                    if(!f_id.equals("-1")) {
+                    if (!f_id.equals("-1")) {
                         intent = new Intent(getApplicationContext(), FriendActivity.class);
                         intent.putExtra("friend_id", f_id);
                         startActivity(intent);
@@ -234,16 +234,7 @@ public class MainActivity extends AppCompatActivity
 
         ProfilePictureView imgvw = (ProfilePictureView) hView.findViewById(R.id.profilePicture);
         if (isFB) {
-
-            //ImageView imgvw = (ImageView)hView.findViewById(R.id.profilePicture);
-           /* ProfilePictureView fb = new ProfilePictureView(this);
-            fb.setProfileId(user_id);
-            fb.setPresetSize(ProfilePictureView.SMALL);
-            ImageView fbImage = ( ( ImageView)fb.getChildAt( 0));
-            Bitmap bitmap  = ( ( BitmapDrawable) fbImage.getDrawable()).getBitmap();
-            imgvw.setImageBitmap(bitmap);*/
             imgvw.setProfileId(fbID);
-
         }
 
 
