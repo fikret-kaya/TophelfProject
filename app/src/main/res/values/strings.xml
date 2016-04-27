@@ -18,4 +18,5 @@
     <string name="title_activity_friend">FriendActivity</string>
     <string name="title_activity_place_for_tag">PlaceForTag</string>
     <string name="title_activity_friends_list">FriendsList</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 </resources>

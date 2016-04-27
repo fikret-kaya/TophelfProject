@@ -411,10 +411,12 @@ public class LoginActivity extends AppCompatActivity {
                     jsonParam = new JSONObject(responseString);
                     int u_id = Integer.parseInt(jsonParam.getString("u_id"));
                     String user_name = jsonParam.getString("username");
+                    String phone = jsonParam.getString("phone");
 
                     SharedPreferences.Editor editor = sharedpreferences.edit();
                     editor.putString("u_id", "" + u_id);
                     editor.putString("name", user_name);
+                    editor.putString("phone", phone);
                     editor.putBoolean("isFB", false);
                     editor.putBoolean("isLogin", true);
                     editor.commit();

@@ -181,6 +181,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    // server connection
     class Registerconn extends AsyncTask<Object, Void, Boolean>
     {
 

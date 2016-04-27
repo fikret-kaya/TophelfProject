@@ -126,9 +126,9 @@
                     android:layout_height="wrap_content"
                     android:text="Place Info"
                     android:id="@+id/placeinfo"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="onClick"
                     android:layout_gravity="center_horizontal"
-                    android:background="@android:color/transparent"
                     android:textColor="#7cc3e1"/>
 
                 <Button
