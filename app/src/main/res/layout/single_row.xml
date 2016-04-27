@@ -82,8 +82,8 @@
         android:textColor="#000000"
         android:gravity="center"
         android:layout_below="@+id/place"
-        android:layout_toRightOf="@+id/rating"
-        android:layout_toEndOf="@+id/rating"
+        android:layout_toRightOf="@+id/forr"
+        android:layout_toEndOf="@+id/forr"
         android:textStyle="italic" />
 
     <Button
@@ -101,12 +101,24 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="14dp"
-        android:text="4/5 for "
+        android:text="4/5 "
         android:id="@+id/rating"
         android:layout_below="@+id/place"
-        android:textColor="#55B1D9"
         android:layout_toRightOf="@+id/image"
         android:layout_toEndOf="@+id/image"
+        android:textStyle="italic" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="14dp"
+        android:text="points for "
+        android:id="@+id/forr"
+        android:layout_below="@+id/place"
+        android:textColor="#55B1D9"
+        android:layout_toRightOf="@+id/rating"
+        android:layout_toEndOf="@+id/rating"
         android:textStyle="italic" />
 
     <Button

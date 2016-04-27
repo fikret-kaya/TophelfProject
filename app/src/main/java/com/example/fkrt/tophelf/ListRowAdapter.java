@@ -54,6 +54,8 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     String[] emails;
     String[] relation_ids;
     String[] ranks;
+    boolean[] minus;
+    boolean[] plus;
 
     ListRowAdapter(Context context, int images, String[] names, String[] ids, String[] places, String[] tags, String[] comments,
                                         String[] ratings, String[] relationTimes, String[] emails, String[] relation_ids, String[] ranks) {
@@ -70,6 +72,8 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         this.emails = emails;
         this.relation_ids = relation_ids;
         this.ranks = ranks;
+        minus = new boolean[names.length];
+        plus = new boolean[names.length];
     }
 
     /*placeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -86,7 +90,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
 
         ProfilePictureView myImage = (ProfilePictureView) row.findViewById(R.id.image);
         TextView myName = (TextView) row.findViewById(R.id.name);
-        TextView myPlace = (TextView) row.findViewById(R.id.place);
+        final TextView myPlace = (TextView) row.findViewById(R.id.place);
         TextView myTag = (TextView) row.findViewById(R.id.tag);
         TextView myComment = (TextView) row.findViewById(R.id.comment);
         TextView myRating = (TextView) row.findViewById(R.id.rating);
@@ -111,11 +115,13 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 for (int i = 0; i < ranks.length; i+=2){
                     if (relation_ids[position].equals(ranks[i])) {
                         if (ranks[i+1].equals("+")) {
+                            plus[position] = true;
                             myPlus.setBackgroundResource(R.drawable.plusf);
                             myMinus.setBackgroundResource(R.drawable.minuse);
                             break;
                         }
                         if (ranks[i+1].equals("-")) {
+                            minus[position] = true;
                             myMinus.setBackgroundResource(R.drawable.minusf);
                             myPlus.setBackgroundResource(R.drawable.pluse);
                             break;
@@ -172,7 +178,7 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         myName.setText(names[position]);
         myPlace.setText(places[position]);
         myTag.setText(tags[position]);
-        myRating.setText(ratings[position] + " for ");
+        myRating.setText(ratings[position] + " ");
 
         row.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -247,6 +253,25 @@ public class ListRowAdapter extends ArrayAdapter<String> {
             public void onClick(View v) {
                 try {
                     boolean b = new MakeRankingConn().execute(u_id,relation_ids[position],"-").get();
+                    if(plus[position]) {
+                        b = new CalculateRankConn().execute(ids[position],"-2").get();
+                        myMinus.setBackgroundResource(R.drawable.minusf);
+                        myPlus.setBackgroundResource(R.drawable.pluse);
+                        minus[position] = true;
+                        plus[position] = false;
+                    } else if (minus[position]) {
+                        b = new CalculateRankConn().execute(ids[position],"1").get();
+                        myMinus.setBackgroundResource(R.drawable.minuse);
+                        myPlus.setBackgroundResource(R.drawable.pluse);
+                        minus[position] = false;
+                        plus[position] = false;
+                    } else {
+                        b = new CalculateRankConn().execute(ids[position],"-1").get();
+                        myMinus.setBackgroundResource(R.drawable.minusf);
+                        myPlus.setBackgroundResource(R.drawable.pluse);
+                        minus[position] = true;
+                        plus[position] = false;
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
@@ -254,6 +279,8 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 }
                 myMinus.setBackgroundResource(R.drawable.minusf);
                 myPlus.setBackgroundResource(R.drawable.pluse);
+                minus[position] = true;
+                plus[position] = false;
             }
         });
 
@@ -262,13 +289,31 @@ public class ListRowAdapter extends ArrayAdapter<String> {
             public void onClick(View v) {
                 try {
                     boolean b = new MakeRankingConn().execute(u_id,relation_ids[position],"+").get();
+                    if(minus[position]) {
+                        b = new CalculateRankConn().execute(ids[position],"2").get();
+                        myPlus.setBackgroundResource(R.drawable.plusf);
+                        myMinus.setBackgroundResource(R.drawable.minuse);
+                        minus[position] = false;
+                        plus[position] = true;
+                    } else if (plus[position]) {
+                        b = new CalculateRankConn().execute(ids[position],"-1").get();
+                        myMinus.setBackgroundResource(R.drawable.minuse);
+                        myPlus.setBackgroundResource(R.drawable.pluse);
+                        minus[position] = false;
+                        plus[position] = false;
+                    } else {
+                        b = new CalculateRankConn().execute(ids[position],"1").get();
+                        myPlus.setBackgroundResource(R.drawable.plusf);
+                        myMinus.setBackgroundResource(R.drawable.minuse);
+                        minus[position] = false;
+                        plus[position] = true;
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
-                myPlus.setBackgroundResource(R.drawable.plusf);
-                myMinus.setBackgroundResource(R.drawable.minuse);
+
             }
         });
 
@@ -424,6 +469,73 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 }
                 else {
                     is = conn.getErrorStream();
+                }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+        }
+    }
+
+    //  Server connectıon
+    class CalculateRankConn extends AsyncTask<String, Void, Boolean>
+    {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            String user_id = params[0];
+            String vote = params[1];
+
+            try {
+                URL url = new URL("http://"+context.getString(R.string.ip)+":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "CalcRankings");
+                jsonParam.put("user_id", user_id);
+                jsonParam.put("vote",vote);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    conn.disconnect();
+                    return true;
+                }
+                else {
+                    conn.disconnect();
+                    return false;
                 }
 
             } catch (UnsupportedEncodingException e) {

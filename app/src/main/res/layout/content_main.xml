@@ -16,7 +16,7 @@
     <SearchView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:queryHint="#search ..."
+        android:queryHint="\@user, $place or #tag "
         android:id="@+id/searchbox"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
