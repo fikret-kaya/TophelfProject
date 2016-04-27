@@ -54,12 +54,9 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     String[] emails;
     String[] relation_ids;
     String[] ranks;
-<<<<<<< HEAD
     boolean[] minus;
     boolean[] plus;
-=======
     double[] sorted;
->>>>>>> a080279837425088d4d01d8c2623e49d70bb65d7
 
     ListRowAdapter(Context context, int images, String[] names, String[] ids, String[] places, String[] tags, String[] comments,
                                         String[] ratings, String[] relationTimes, String[] emails, String[] relation_ids, String[] ranks) {
@@ -76,14 +73,11 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         this.emails = emails;
         this.relation_ids = relation_ids;
         this.ranks = ranks;
-<<<<<<< HEAD
         minus = new boolean[names.length];
         plus = new boolean[names.length];
-=======
         sorted = new double[relationTimes.length];
 
         sort();
->>>>>>> a080279837425088d4d01d8c2623e49d70bb65d7
     }
 
     public void sort(){
@@ -238,6 +232,19 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                 }
                 context.startActivity(intent);
 
+            }
+        });
+
+        myImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!u_id.equals(ids[position])) {
+                    intent = new Intent(context, FriendActivity.class);
+                    intent.putExtra("friend_id", ids[position]);
+                } else {
+                    intent = new Intent(context, ProfileActivity.class);
+                }
+                context.startActivity(intent);
             }
         });
 

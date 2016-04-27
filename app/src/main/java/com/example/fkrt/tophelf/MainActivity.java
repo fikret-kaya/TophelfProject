@@ -48,6 +48,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
@@ -372,9 +373,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_votesComments) {
             intent = new Intent(this, MainActivity.class);
             this.startActivity(intent);
-
         } else if (id == R.id.nav_settings) {
-
+            if(!isFB) {
+                intent = new Intent(this, SettingsActivity.class);
+                this.startActivity(intent);
+            }
         } else if (id == R.id.nav_helpfeedback) {
 
         } else if (id == R.id.nav_logout) {

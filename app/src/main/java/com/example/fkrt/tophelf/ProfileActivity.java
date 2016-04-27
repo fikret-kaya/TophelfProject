@@ -312,7 +312,10 @@ public class ProfileActivity extends AppCompatActivity
             intent = new Intent(this, MainActivity.class);
             this.startActivity(intent);
         } else if (id == R.id.nav_settings) {
-
+            if(!isFB) {
+                intent = new Intent(this, SettingsActivity.class);
+                this.startActivity(intent);
+            }
         } else if (id == R.id.nav_helpfeedback) {
 
         } else if (id == R.id.nav_logout) {
