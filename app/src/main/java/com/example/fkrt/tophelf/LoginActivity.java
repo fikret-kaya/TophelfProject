@@ -14,6 +14,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -105,6 +107,21 @@ public class LoginActivity extends AppCompatActivity {
         sharedpreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         isLogin = sharedpreferences.getBoolean("isLogin",false);
+
+        if(!isOnline()) {
+            AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this).create();
+            alertDialog.setTitle("Warning!");
+            alertDialog.setMessage("No internet connection is found.");
+            alertDialog.setIcon(R.drawable.tophelf);
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    finish();
+                }
+            });
+            alertDialog.show();
+        }
 
         if(isLogin){
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -198,6 +215,12 @@ public class LoginActivity extends AppCompatActivity {
         accessTokenTracker.startTracking();
         profileTracker.startTracking();
 
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     private void handleRegister(Profile p) throws ExecutionException, InterruptedException, IOException {
