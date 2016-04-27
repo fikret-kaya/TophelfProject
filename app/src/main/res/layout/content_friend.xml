@@ -120,12 +120,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="+ Follow"
-            android:textColor="#2D96C4"
+            android:textColor="#000000"
             android:onClick="onClick"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/seperatorLine"
-            android:background="@drawable/button_style"
-            android:textStyle="bold" />
+            android:background="@drawable/button_style2" />
 
         <View
             android:id="@+id/seperatorLine2"
