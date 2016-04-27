@@ -60,10 +60,11 @@ public class FriendActivity extends AppCompatActivity
 
     private RelativeLayout inner0;
     private SearchView searchView;
+    private TextView friendsCount;
     private ListView votes;
     private ListView searchList;
 
-    ArrayList<String> ranks;
+    ArrayList<String> ranks, friendsIDs;
     ArrayList<Relation> relations;
 
     private String[] names, ids, places, tags, comments, ratings, relationTimes, emails,relation_ids;
@@ -84,8 +85,8 @@ public class FriendActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                intent = new Intent(view.getContext(), VoteActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -110,6 +111,9 @@ public class FriendActivity extends AppCompatActivity
         boolean b = false;
         String fname = "";
         try {
+            friendsIDs = new GetFriendsConn().execute(friend_id).get();
+            friendsCount = (TextView) findViewById(R.id.friendsCount);
+            friendsCount.setText("Number of Friends : " + friendsIDs.size());
             b = new IsFriendConn().execute(friend_id,user_id).get();
             fname = new GetFriendConn().execute(friend_id).get();
             setTitle(fname);
@@ -242,11 +246,11 @@ public class FriendActivity extends AppCompatActivity
             intent = new Intent(this, ProfileActivity.class);
             this.startActivity(intent);
         } else if (id == R.id.nav_friends) {
-
+            intent = new Intent(this, FriendsListActivity.class);
+            this.startActivity(intent);
         } else if (id == R.id.nav_votesComments) {
             intent = new Intent(this, MainActivity.class);
             this.startActivity(intent);
-
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_helpfeedback) {
@@ -716,6 +720,90 @@ public class FriendActivity extends AppCompatActivity
         protected void onPostExecute(String str) {
             super.onPostExecute(str);
         }
+    }
+
+    //  Server connectıon
+    class GetFriendsConn extends AsyncTask<String, Void, ArrayList<String>> {
+
+        ArrayList<String> friendsIDs = new ArrayList<String>();
+        private String username, email, images, ratings;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(String... params) {
+            String user_id = params[0];
+
+            try {
+                URL url = new URL("http://" + getResources().getString(R.string.ip) + ":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "GetFriends");
+                jsonParam.put("user_id", user_id);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+                InputStream is = null;
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while ((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    //responseString = responseString.substring(1, response.length() - 1);
+
+                    JSONArray jsonarray = new JSONArray(responseString);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        jsonParam = jsonarray.getJSONObject(i);
+                        friendsIDs.add(jsonParam.getString("u_id2"));
+                    }
+
+                } else {
+                    is = conn.getErrorStream();
+                }
+                conn.disconnect();
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return friendsIDs;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> friendsIDs) {
+            super.onPostExecute(friendsIDs);
+        }
+
     }
 
     //  Server connectıon

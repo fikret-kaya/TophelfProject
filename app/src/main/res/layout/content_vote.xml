@@ -129,7 +129,7 @@
             android:inputType="textMultiLine"
             android:ems="12"
             android:gravity="top|left"
-            android:text="Comments ..."
+            android:hint="Comments ..."
             android:scrollbars="vertical"
             android:maxLines="5"
             android:id="@+id/editText"

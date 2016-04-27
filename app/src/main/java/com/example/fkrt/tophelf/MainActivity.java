@@ -122,6 +122,22 @@ public class MainActivity extends AppCompatActivity
             relation_ids[i] = relations.get(i).getR_id();
         }
 
+        int count = 0;
+        if(ids.length > 0) {
+            count++;
+            String prevID = ids[0];
+            for (int i = 1; i < ids.length; i++) {
+                if(!ids[i].equals(prevID )) {
+                    count++;
+                    prevID  = ids[i];
+                }
+            }
+        }
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("numOfFriends", count+"");
+        editor.commit();
+
         String[] ranksArr;
         try {
             ranks = new GetRankingConn().execute(u_id).get();
@@ -270,7 +286,8 @@ public class MainActivity extends AppCompatActivity
             intent = new Intent(this, ProfileActivity.class);
             this.startActivity(intent);
         } else if (id == R.id.nav_friends) {
-
+            intent = new Intent(this, FriendsListActivity.class);
+            this.startActivity(intent);
         } else if (id == R.id.nav_votesComments) {
             intent = new Intent(this, MainActivity.class);
             this.startActivity(intent);
@@ -453,7 +470,6 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(ArrayList<String> friendsIDs) {
             super.onPostExecute(friendsIDs);
         }
-
     }
 
     //  Server connectıon
