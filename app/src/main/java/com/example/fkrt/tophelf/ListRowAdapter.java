@@ -280,7 +280,6 @@ public class ListRowAdapter extends ArrayAdapter<String> {
             public void onClick(View v) {
                 try {
                     boolean b = new MakeRankingConn().execute(u_id,relation_ids[position],"-").get();
-                    String zirt = "";
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
