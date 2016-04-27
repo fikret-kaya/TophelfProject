@@ -195,28 +195,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-<<<<<<< HEAD
-                searchList.setVisibility(View.INVISIBLE);
-                placeList.setVisibility(View.VISIBLE);
-
-                if (query.charAt(0) == '@') {
-                    String f_id = null;
-                    try {
-                        f_id = new GetFriendIdConn().execute(query.substring(1)).get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (!f_id.equals("-1")) {
-                        intent = new Intent(getApplicationContext(), FriendActivity.class);
-                        intent.putExtra("friend_id", f_id);
-                        startActivity(intent);
-                    }
-                }
-=======
->>>>>>> 030234a144c52d1b154fe59d4e75e2c82ce1ec0c
 
                 Toast.makeText(getApplicationContext(), "No one found!", Toast.LENGTH_LONG).show();
                 return false;

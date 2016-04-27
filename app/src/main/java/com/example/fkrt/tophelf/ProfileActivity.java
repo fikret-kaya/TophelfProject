@@ -201,6 +201,15 @@ public class ProfileActivity extends AppCompatActivity
                 return true;
             }
         });
+
+        View hView = navigationView.getHeaderView(0);
+        TextView name = (TextView) hView.findViewById(R.id.name);
+        name.setText(user_name);
+
+        ProfilePictureView imgvw = (ProfilePictureView) hView.findViewById(R.id.profilePicture);
+        if (isFB) {
+            imgvw.setProfileId(fbID);
+        }
     }
 
     @Override
