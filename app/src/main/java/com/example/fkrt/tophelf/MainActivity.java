@@ -330,6 +330,7 @@ public class MainActivity extends AppCompatActivity
             }
             intent = new Intent(this, LoginActivity.class);
             this.startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
