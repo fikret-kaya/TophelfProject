@@ -66,6 +66,7 @@ public class ProfileActivity extends AppCompatActivity
     ArrayList<Relation> relations;
     ArrayList<Friend> friends;
     ArrayList<Place> placesSearched;
+    ArrayList<Tag> tagsSearched;
 
     private String[] names, ids, places, tags, comments, ratings, relationTimes, emails, relation_ids;
 
@@ -221,6 +222,30 @@ public class ProfileActivity extends AppCompatActivity
                                 intent.putExtra("placeID", placesSearched.get(position).getId());
                                 intent.putExtra("placeInfo", placesSearched.get(position).getInfo());
                                 intent.putExtra("placeLoc", placesSearched.get(position).getLoc());
+                                startActivity(intent);
+                            }
+                        });
+                    } else if (newText.charAt(0) == '#') { // Search Tag
+                        placeTagSearchList.setVisibility(View.VISIBLE);
+                        try {
+                            tagsSearched = new GetTagsSearchedConn().execute(newText.substring(1)).get();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                        String[] tagnames = new String[tagsSearched.size()];
+                        for(int i = 0; i < tagsSearched.size(); i++) {
+                            tagnames[i] = tagsSearched.get(i).getName();
+                        }
+                        arrayAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1,tagnames);
+                        placeTagSearchList.setAdapter(arrayAdapter);
+
+                        placeTagSearchList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                intent = new Intent(getBaseContext(), PlaceForTagActivity.class);
+                                intent.putExtra("tag", tagsSearched.get(position).getName());
                                 startActivity(intent);
                             }
                         });
@@ -620,6 +645,89 @@ public class ProfileActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(ArrayList<Place> places) {
             super.onPostExecute(places);
+        }
+    }
+
+    //  Server connectıon
+    class GetTagsSearchedConn extends AsyncTask<String, Void, ArrayList<Tag>> {
+
+        ArrayList<Tag> tags = new ArrayList<Tag>();
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected ArrayList<Tag> doInBackground(String... params) {
+            String tagname = params[0];
+
+            try {
+                URL url = new URL("http://" + getResources().getString(R.string.ip) + ":3000/"); // 192.168.1.24 --- 10.0.2.2 --- 139.179.211.68
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.connect();
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("type", "GetTagsSearched");
+                jsonParam.put("tagname", tagname);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(jsonParam.toString()); // URLEncoder.encode(jsonParam.toString(), "UTF-8")
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int statusCode = conn.getResponseCode();
+                InputStream is = null;
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    // Create an InputStream in order to extract the response object
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                    String line, responseString;
+                    StringBuffer response = new StringBuffer();
+                    while ((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    responseString = response.toString();
+                    //responseString = responseString.substring(1, response.length() - 1);
+
+                    JSONArray jsonarray = new JSONArray(responseString);
+                    for (int i = 0; i < jsonarray.length(); i++) {
+                        jsonParam = jsonarray.getJSONObject(i);
+                        tags.add(new Tag(jsonParam.getString("tagname"), jsonParam.getString("t_id"),
+                                jsonParam.getString("stamp")));
+                    }
+
+                } else {
+                    is = conn.getErrorStream();
+                }
+                conn.disconnect();
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return tags;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Tag> tags) {
+            super.onPostExecute(tags);
         }
     }
 

@@ -73,6 +73,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         register = (Button) findViewById(R.id.register);
         selectImage = (Button) findViewById(R.id.selectImage);
+
+        image = BitmapFactory.decodeResource(getResources(),R.drawable.logo64);
     }
 
     // select an profile image
