@@ -1,11 +1,13 @@
 package com.example.fkrt.tophelf;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -56,7 +58,7 @@ public class FriendActivity extends AppCompatActivity
     private Intent intent;
     private Bundle bundle;
 
-    private String friend_id, user_id,fbID;
+    private String friend_id, user_id,fbID,user_name;
     private SharedPreferences sharedPref;
     private boolean isFB;
 
@@ -91,8 +93,14 @@ public class FriendActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intent = new Intent(view.getContext(), VoteActivity.class);
-                startActivity(intent);
+                final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+                if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+                    buildAlertMessageNoGps();
+                }else {
+                    intent = new Intent(view.getContext(), VoteActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -113,6 +121,8 @@ public class FriendActivity extends AppCompatActivity
         fbID = sharedPref.getString("fbID", "N/A");
         bundle = getIntent().getExtras();
         friend_id = bundle.getString("friend_id");
+        user_name = sharedPref.getString("name", "N/A");
+
 
         boolean b = false;
         String fname = "";
@@ -284,6 +294,33 @@ public class FriendActivity extends AppCompatActivity
             }
         });
 
+        View hView = navigationView.getHeaderView(0);
+        TextView name = (TextView) hView.findViewById(R.id.name);
+        name.setText(user_name);
+
+        ProfilePictureView imgvw = (ProfilePictureView) hView.findViewById(R.id.profilePicture);
+        if (isFB) {
+            imgvw.setProfileId(fbID);
+        }
+
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 
     // add or remove friend from friend list
@@ -294,9 +331,11 @@ public class FriendActivity extends AppCompatActivity
         if(friendship.getText().equals("+ Follow")) {
             addRemove = "1";
             friendship.setText("Following");
+            friendship.setBackgroundResource(R.drawable.button_style3);
         } else {
             addRemove = "0";
             friendship.setText("+ Follow");
+            friendship.setBackgroundResource(R.drawable.button_style2);
         }
         boolean b = new AddRemoveFriendConn().execute(friend_id, user_id, addRemove).get();
 
@@ -330,6 +369,7 @@ public class FriendActivity extends AppCompatActivity
             }
             intent = new Intent(this, LoginActivity.class);
             this.startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -418,8 +458,10 @@ public class FriendActivity extends AppCompatActivity
 
             if(responseString.equals("0")) {
                 friendship.setText("+ Follow");
+                friendship.setBackgroundResource(R.drawable.button_style2);
             } else if(responseString.equals("1")) {
                 friendship.setText("Following");
+                friendship.setBackgroundResource(R.drawable.button_style3);
             }
         }
     }

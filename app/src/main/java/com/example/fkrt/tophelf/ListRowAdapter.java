@@ -54,8 +54,12 @@ public class ListRowAdapter extends ArrayAdapter<String> {
     String[] emails;
     String[] relation_ids;
     String[] ranks;
+<<<<<<< HEAD
     boolean[] minus;
     boolean[] plus;
+=======
+    double[] sorted;
+>>>>>>> a080279837425088d4d01d8c2623e49d70bb65d7
 
     ListRowAdapter(Context context, int images, String[] names, String[] ids, String[] places, String[] tags, String[] comments,
                                         String[] ratings, String[] relationTimes, String[] emails, String[] relation_ids, String[] ranks) {
@@ -72,16 +76,62 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         this.emails = emails;
         this.relation_ids = relation_ids;
         this.ranks = ranks;
+<<<<<<< HEAD
         minus = new boolean[names.length];
         plus = new boolean[names.length];
+=======
+        sorted = new double[relationTimes.length];
+
+        sort();
+>>>>>>> a080279837425088d4d01d8c2623e49d70bb65d7
     }
 
-    /*placeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Toast.makeText(getApplicationContext(), "fikret", Toast.LENGTH_LONG);
+    public void sort(){
+        int j;
+        double key;
+        String keyN, keyId, keyT,keyP,keyC,keyR,keyRe,keyE,keyRid;
+        int i;
+        for(i = 0; i < relationTimes.length; i++){
+            sorted[i] = Double.parseDouble(relationTimes[i].substring(0, 4) + relationTimes[i].substring(5, 7) + relationTimes[i].substring(8, 10) +
+                    relationTimes[i].substring(11, 13) + relationTimes[i].substring(14, 16) + relationTimes[i].substring(17, 19));
         }
-    });*/
+
+        for (j = 1; j < sorted.length; j++) {
+            key = sorted[j];
+            keyN = names[j];
+            keyId = ids[j];
+            keyP = places[j];
+            keyT = tags[j];
+            keyC = comments[j];
+            keyR = ratings[j];
+            keyRe = relationTimes[j];
+            keyE = emails[j];
+            keyRid = relation_ids[j];
+            for(i = j - 1; (i >= 0) && (sorted[i] < key); i--) {
+                sorted[i+1] = sorted[i];
+                names[i+1] = names[i];
+                ids[i+1] = ids[i];
+                places[i+1] = places[i];
+                tags[i+1] = tags[i];
+                comments[i+1] = comments[i];
+                ratings[i+1] = ratings[i];
+                relationTimes[i+1] = relationTimes[i];
+                emails[i+1] = emails[i];
+                relation_ids[i+1] = relation_ids[i];
+            }
+            sorted[i+1] = key;
+            names[i+1] = keyN;
+            ids[i+1] = keyId;
+            places[i+1] = keyP;
+            tags[i+1] = keyT;
+            comments[i+1] = keyC;
+            ratings[i+1] = keyR;
+            relationTimes[i+1] = keyRe;
+            emails[i+1] = keyE;
+            relation_ids[i+1] = keyRid;
+
+        }
+    }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -134,20 +184,6 @@ public class ListRowAdapter extends ArrayAdapter<String> {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentDateandTime = sdf.format(new Date());
 
-        String[] times = currentDateandTime.split("- :");
-
-        String aaa = currentDateandTime.substring(0, 4);
-        String bbb = relationTimes[position].substring(0, 4);
-
-        aaa = currentDateandTime.substring(5,7);
-        bbb = currentDateandTime.substring(5,7);
-
-        aaa = currentDateandTime.substring(8,9);
-        bbb = currentDateandTime.substring(8,9);
-
-        aaa = currentDateandTime.substring(11,12);
-        bbb = currentDateandTime.substring(11,12);
-
         if(currentDateandTime.substring(0,4).equals(relationTimes[position].substring(0,4))) {
             if(currentDateandTime.substring(5,7).equals(currentDateandTime.substring(5,7))) {
                 if(currentDateandTime.substring(8,10).equals(relationTimes[position].substring(8,10))) {
@@ -156,23 +192,23 @@ public class ListRowAdapter extends ArrayAdapter<String> {
                             if(currentDateandTime.substring(17,19).equals(relationTimes[position].substring(17,19))) {
                                 myTime.setText("0s");
                             } else {
-                                myTime.setText(Integer.parseInt(currentDateandTime.substring(17,19))-Integer.parseInt(relationTimes[position].substring(17,19))+"s");
+                                myTime.setText((Integer.parseInt(currentDateandTime.substring(17,19))-Integer.parseInt(relationTimes[position].substring(17,19)))+"s");
                             }
                         } else {
-                            myTime.setText(Integer.parseInt(currentDateandTime.substring(14,16))-Integer.parseInt(relationTimes[position].substring(14, 16))+"m");
+                            myTime.setText((Integer.parseInt(currentDateandTime.substring(14,16))-Integer.parseInt(relationTimes[position].substring(14, 16)))+"m");
                         }
                     } else {
-                        myTime.setText(Integer.parseInt(currentDateandTime.substring(11,13))-Integer.parseInt(relationTimes[position].substring(11, 13))+"h");
+                        myTime.setText((Integer.parseInt(currentDateandTime.substring(11,13))-Integer.parseInt(relationTimes[position].substring(11, 13))-3)+"h");
                     }
                 } else {
-                    myTime.setText(Integer.parseInt(currentDateandTime.substring(8,10))-Integer.parseInt(relationTimes[position].substring(8, 10))+"d");
+                    myTime.setText((Integer.parseInt(currentDateandTime.substring(8,10))-Integer.parseInt(relationTimes[position].substring(8, 10)))+"d");
                 }
             } else {
-                myTime.setText(Integer.parseInt(currentDateandTime.substring(5,7))-Integer.parseInt(relationTimes[position].substring(5, 7))+"mo");
+                myTime.setText((Integer.parseInt(currentDateandTime.substring(5,7))-Integer.parseInt(relationTimes[position].substring(5, 7)))+"mo");
             }
 
         } else {
-            myTime.setText(Integer.parseInt(currentDateandTime.substring(0,4))-Integer.parseInt(relationTimes[position].substring(0, 4))+"y");
+            myTime.setText((Integer.parseInt(currentDateandTime.substring(0,4))-Integer.parseInt(relationTimes[position].substring(0, 4)))+"y");
         }
 
         myName.setText(names[position]);
