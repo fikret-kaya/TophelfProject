@@ -54,7 +54,7 @@ public class FriendActivity extends AppCompatActivity
     private Intent intent;
     private Bundle bundle;
 
-    private String friend_id, user_id,fbID;
+    private String friend_id, user_id,fbID,user_name;
     private SharedPreferences sharedPref;
     private boolean isFB;
 
@@ -107,6 +107,8 @@ public class FriendActivity extends AppCompatActivity
         fbID = sharedPref.getString("fbID", "N/A");
         bundle = getIntent().getExtras();
         friend_id = bundle.getString("friend_id");
+        user_name = sharedPref.getString("name", "N/A");
+
 
         boolean b = false;
         String fname = "";
@@ -218,6 +220,15 @@ public class FriendActivity extends AppCompatActivity
                 return false;
             }
         });
+
+        View hView = navigationView.getHeaderView(0);
+        TextView name = (TextView) hView.findViewById(R.id.name);
+        name.setText(user_name);
+
+        ProfilePictureView imgvw = (ProfilePictureView) hView.findViewById(R.id.profilePicture);
+        if (isFB) {
+            imgvw.setProfileId(fbID);
+        }
 
     }
 
