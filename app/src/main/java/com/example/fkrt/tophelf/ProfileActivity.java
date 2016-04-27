@@ -54,11 +54,12 @@ public class ProfileActivity extends AppCompatActivity
     private RelativeLayout inner0;
     private ProfilePictureView profileImage;
     private SearchView searchView;
+    private TextView friendsCount;
     private ListView votes;
     private ListView searchList;
 
     private SharedPreferences sharedPref;
-    private String u_id, user_name,fbID;
+    private String u_id, user_name, fbID, numOfFriends;
     private boolean isFB;
 
     ArrayList<Relation> relations;
@@ -100,6 +101,10 @@ public class ProfileActivity extends AppCompatActivity
         user_name = sharedPref.getString("name", "N/A");
         isFB = sharedPref.getBoolean("isFB", false);
         fbID = sharedPref.getString("fbID", "N/A");
+        numOfFriends = sharedPref.getString("numOfFriends", "N/A");
+
+        friendsCount = (TextView) findViewById(R.id.friendsCount);
+        friendsCount.setText("Number of Friends : " + numOfFriends);
 
         setTitle("Profile");
 
@@ -200,11 +205,11 @@ public class ProfileActivity extends AppCompatActivity
             intent = new Intent(this, ProfileActivity.class);
             this.startActivity(intent);
         } else if (id == R.id.nav_friends) {
-
+            intent = new Intent(this, FriendsListActivity.class);
+            this.startActivity(intent);
         } else if (id == R.id.nav_votesComments) {
             intent = new Intent(this, MainActivity.class);
             this.startActivity(intent);
-
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_helpfeedback) {
