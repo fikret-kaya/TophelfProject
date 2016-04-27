@@ -54,6 +54,7 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    
     private Intent intent;
     private Bundle bundle;
     private String user_name;
